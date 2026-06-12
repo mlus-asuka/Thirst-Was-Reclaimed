@@ -25,11 +25,11 @@ public class MixinPotionItem {
         return true;
     }
 
-    @Inject(method = "finishUsingItem", at = @At("RETURN"))
+    @Inject(method = "finishUsingItem", at = @At("HEAD"))
     public void onFinishUsingItem(ItemStack item, Level level, LivingEntity livingEntity, CallbackInfoReturnable<ItemStack> cir)
     {
         Player player = livingEntity instanceof Player ? (Player)livingEntity: null;
-        if(player != null)
+        if(player != null && !level.isClientSide)
         {
             if (WaterPurity.givePurityEffects((Player) livingEntity, item)){
                 PlayerThirst.drink(item, player);

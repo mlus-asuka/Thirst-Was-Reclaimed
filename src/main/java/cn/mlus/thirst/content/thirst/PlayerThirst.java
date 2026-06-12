@@ -1,12 +1,12 @@
 package cn.mlus.thirst.content.thirst;
 
-import de.teamlapen.vampirism.util.Helper;
 import cn.mlus.thirst.api.ThirstHelper;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import cn.mlus.thirst.foundation.common.damagesource.ModDamageSource;
 import cn.mlus.thirst.foundation.config.CommonConfig;
 import cn.mlus.thirst.foundation.network.message.PlayerThirstSyncMessage;
+import de.teamlapen.vampirism.util.Helper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;

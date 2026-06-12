@@ -12,4 +12,9 @@ public class MixinThirstHandler {
     private static void onPlayerInteractItem(glitchcore.event.player.PlayerInteractEvent.UseItem event, CallbackInfo ci){
         ci.cancel();
     }
+
+    @Inject(method = "onItemUseFinish", at = @At("HEAD"), cancellable = true)
+    private static void onItemUseFinish(glitchcore.event.entity.LivingEntityUseItemEvent.Finish event, CallbackInfo ci) {
+        ci.cancel();
+    }
 }

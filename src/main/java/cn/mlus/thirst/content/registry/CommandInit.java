@@ -1,12 +1,12 @@
 package cn.mlus.thirst.content.registry;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import cn.mlus.thirst.Thirst;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import cn.mlus.thirst.foundation.network.message.PlayerThirstSyncMessage;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -18,7 +18,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-
 
 import java.util.ArrayList;
 import java.util.Collection;

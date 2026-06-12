@@ -36,9 +36,10 @@ public class PlayerThirstManager {
     public static void drink(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntity() instanceof Player && ThirstHelper.itemRestoresThirst(event.getItem())) {
             ItemStack item = event.getItem();
+            if(event.getItem().getItem() instanceof PotionItem)
+                return;
+
             if (WaterPurity.givePurityEffects((Player) event.getEntity(), item)){
-                if(event.getItem().getItem() instanceof PotionItem)
-                    return;
                 if(event.getItem().getFoodProperties(null) != null)
                     return;
                 if(event.getItem().getItem() instanceof DrinkableItem)
