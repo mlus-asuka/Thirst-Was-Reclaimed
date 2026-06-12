@@ -1,0 +1,25 @@
+{
+  "death.attack.dehydrate": "%1$s murió por deshidratación",
+  "death.attack.dehydrate.player": "%1$s murió por deshidratación mientras combatía contra %2$s",
+  "item.thirst.wooden_water_bowl": "Cuenco de madera con agua",
+  "item.thirst.terracotta_water_bowl": "Cuenco de terracota con agua",
+  "item.thirst.terracotta_bowl": "Cuenco de terracota",
+  "item.thirst.clay_bowl": "Cuenco de arcilla",
+  "itemGroup.thirst": "Thirst was Taken",
+  "thirst.purity.dirty": "Sucia",
+  "thirst.purity.slightly_dirty": "Ligeramente sucia",
+  "thirst.purity.acceptable": "Aceptable",
+  "thirst.purity.purified": "Purificada",
+  "block.thirst.sand_filter": "Filtro de arena",
+
+  "thirst.ponder.sand_filter.header": "Purificando agua con un filtro de arena",
+  "thirst.ponder.sand_filter.text_1": "Un filtro de arena purifica en un nivel el agua bombeada a través de él",
+  "thirst.ponder.sand_filter.text_2": "El agua sucia debe bombearse desde la parte superior...",
+  "thirst.ponder.sand_filter.text_3": "y el agua purificada puede extraerse por la parte inferior",
+  "command.thirst.query": "Sed actual: %1$s, Saciedad actual: %2$s",
+  "command.thirst.set": "sed establecida en %1$s, saciedad establecida en %2$s",
+  "command.thirst.enable": "Activar tick de sed para %1$s",
+  "command.thirst.disable": "Desactivar tick de sed para %1$s",
+
+  "effect.thirst.quenchness": "Saciedad"
+}
