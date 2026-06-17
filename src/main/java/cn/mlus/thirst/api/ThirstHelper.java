@@ -1,6 +1,5 @@
 package cn.mlus.thirst.api;
 
-import com.momosoftworks.coldsweat.api.util.Temperature;
 import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
 import cn.mlus.thirst.content.purity.ContainerWithPurity;
 import cn.mlus.thirst.content.purity.WaterPurity;
@@ -12,6 +11,7 @@ import cn.mlus.thirst.foundation.config.ItemSettingsConfig;
 import cn.mlus.thirst.foundation.config.KeyWordConfig;
 import cn.mlus.thirst.foundation.util.ConfigHelper;
 import cn.mlus.thirst.foundation.util.LoadedValue;
+import com.momosoftworks.coldsweat.api.util.Temperature;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
@@ -265,7 +265,7 @@ public class ThirstHelper
         if(!enableKeywordConfig)
             return false;
 
-        if(itemStack.getFoodProperties(null) != null)
+        if(itemStack.getFoodProperties(null) == null)
             return false;
 
         String pattern = keywordBlackList;
