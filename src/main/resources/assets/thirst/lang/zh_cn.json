@@ -21,5 +21,6 @@
   "command.thirst.enable": "已为玩家 %1$s 启用口渴",
   "command.thirst.disable": "已为玩家 %1$s 禁用口渴",
 
-  "effect.thirst.quenchness": "解渴"
+  "effect.thirst.quenchness": "解渴",
+  "effect.thirst.dehydration": "干渴"
 }

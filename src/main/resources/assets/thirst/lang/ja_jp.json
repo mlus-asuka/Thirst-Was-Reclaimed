@@ -21,5 +21,6 @@
   "command.thirst.enable": "%1$s の渇きを有効化",
   "command.thirst.disable": "%1$s の渇きを無効化",
 
-  "effect.thirst.quenchness": "渇き解消"
+  "effect.thirst.quenchness": "渇き解消",
+  "effect.thirst.dehydration": "脱水"
 }

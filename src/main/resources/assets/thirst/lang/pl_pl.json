@@ -21,5 +21,6 @@
   "command.thirst.enable": "Włącz pragnienie dla %1$s",
   "command.thirst.disable": "Wyłącz pragnienie dla %1$s",
 
-  "effect.thirst.quenchness": "Ugaszenie"
+  "effect.thirst.quenchness": "Ugaszenie",
+  "effect.thirst.dehydration": "Odwodnienie"
 }

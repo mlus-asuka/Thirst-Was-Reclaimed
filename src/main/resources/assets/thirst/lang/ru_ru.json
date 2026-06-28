@@ -21,5 +21,6 @@
   "command.thirst.enable": "Включить жажду для %1$s",
   "command.thirst.disable": "Отключить жажду для %1$s",
 
-  "effect.thirst.quenchness": "Утоление жажды"
+  "effect.thirst.quenchness": "Утоление жажды",
+  "effect.thirst.dehydration": "дегидратация"
 }
