@@ -1,11 +1,12 @@
 package cn.mlus.thirst.foundation.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import de.teamlapen.vampirism.util.Helper;
 import cn.mlus.thirst.Thirst;
+import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModCapabilities;
 import cn.mlus.thirst.foundation.config.ClientConfig;
+import com.mojang.blaze3d.systems.RenderSystem;
+import de.teamlapen.vampirism.util.Helper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +16,7 @@ import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.fml.ModList;
 
 public class ThirstBarRenderer
 {
@@ -63,7 +65,11 @@ public class ThirstBarRenderer
         }
 
         RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, THIRST_ICONS);
+        ResourceLocation thirst_icons = THIRST_ICONS;
+        if (ModList.get().isLoaded("supernatural")) {
+            thirst_icons = SupernaturalHelper.getVampireIcons(thirst_icons, minecraft.player);
+        }
+        RenderSystem.setShaderTexture(0, thirst_icons);
         int left = width / 2 + 91 + ClientConfig.THIRST_BAR_X_OFFSET.get();
         int top = height - gui.rightHeight + ClientConfig.THIRST_BAR_Y_OFFSET.get();
         gui.rightHeight += 10;
@@ -85,12 +91,12 @@ public class ThirstBarRenderer
                 y = top + (random.nextInt(3) - 1);
             }
 
-            guiGraphics.blit(THIRST_ICONS, x, y, 0, 0, 9, 9, 25, 9);
+            guiGraphics.blit(thirst_icons, x, y, 0, 0, 9, 9, 25, 9);
 
             if (idx < level)
-                guiGraphics.blit(THIRST_ICONS, x, y, 16, 0, 9, 9, 25, 9);
+                guiGraphics.blit(thirst_icons, x, y, 16, 0, 9, 9, 25, 9);
             else if (idx == level)
-                guiGraphics.blit(THIRST_ICONS, x, y, 8, 0, 9, 9, 25, 9);
+                guiGraphics.blit(thirst_icons, x, y, 8, 0, 9, 9, 25, 9);
         }
         RenderSystem.disableBlend();
         RenderSystem.setShaderTexture(0, MC_ICONS);

@@ -1,6 +1,5 @@
 package cn.mlus.thirst.content.thirst;
 
-import de.teamlapen.vampirism.util.Helper;
 import cn.mlus.thirst.api.ThirstHelper;
 import cn.mlus.thirst.content.purity.WaterPurity;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
@@ -9,6 +8,7 @@ import cn.mlus.thirst.foundation.common.damagesource.ModDamageSource;
 import cn.mlus.thirst.foundation.config.CommonConfig;
 import cn.mlus.thirst.foundation.network.ThirstModPacketHandler;
 import cn.mlus.thirst.foundation.network.message.PlayerThirstSyncMessage;
+import de.teamlapen.vampirism.util.Helper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -45,7 +45,7 @@ public class PlayerThirst implements IThirst
      */
     public static void drink(ItemStack item, Player player)
     {
-        if(ThirstHelper.itemRestoresThirst(item))
+        if(ThirstHelper.itemRestoresThirst(item) && ThirstHelper.playerRestoresThirst(item, player))
         {
             player.getCapability(ModCapabilities.PLAYER_THIRST,null).ifPresent(cap ->
             {

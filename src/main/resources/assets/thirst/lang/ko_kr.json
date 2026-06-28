@@ -21,5 +21,6 @@
   "command.thirst.enable": "%1$s 에게 갈증 활성화",
   "command.thirst.disable": "%1$s 에게 갈증 비활성화",
 
-  "effect.thirst.quenchness": "갈증 해소"
+  "effect.thirst.quenchness": "갈증 해소",
+  "effect.thirst.dehydration": "탈수"
 }

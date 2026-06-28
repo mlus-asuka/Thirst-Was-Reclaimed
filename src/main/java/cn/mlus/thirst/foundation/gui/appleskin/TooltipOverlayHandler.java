@@ -1,15 +1,15 @@
 package cn.mlus.thirst.foundation.gui.appleskin;
 
+import cn.mlus.thirst.Thirst;
+import cn.mlus.thirst.api.ThirstHelper;
+import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
+import cn.mlus.thirst.foundation.gui.ThirstBarRenderer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
-import cn.mlus.thirst.foundation.gui.ThirstBarRenderer;
-import net.minecraft.client.gui.GuiGraphics;
-import org.jetbrains.annotations.NotNull;
-import cn.mlus.thirst.Thirst;
-import cn.mlus.thirst.api.ThirstHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +21,8 @@ import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEv
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import org.jetbrains.annotations.NotNull;
 import squeek.appleskin.ModConfig;
 import squeek.appleskin.api.food.FoodValues;
 import squeek.appleskin.helpers.KeyHelper;
@@ -190,13 +192,17 @@ public class TooltipOverlayHandler {
             // Render from right to left so that the icons 'face' the right way
             offsetX += (foodTooltip.hungerBars - 1) * 9;
 
-            RenderSystem.setShaderTexture(0, ThirstBarRenderer.THIRST_ICONS);
+            ResourceLocation icons = ThirstBarRenderer.THIRST_ICONS;
+            if (ModList.get().isLoaded("supernatural")) {
+                icons = SupernaturalHelper.getVampireIcons(icons, itemStack);
+            }
+            RenderSystem.setShaderTexture(0, icons);
             for (int i = 0; i < foodTooltip.hungerBars * 2; i += 2)
             {
                 if (thirst == i + 1)
-                    guiGraphics.blit(ThirstBarRenderer.THIRST_ICONS, offsetX, offsetY,0, 8, 0, 9, 9, 25, 9);
+                    guiGraphics.blit(icons, offsetX, offsetY,0, 8, 0, 9, 9, 25, 9);
                 else
-                    guiGraphics.blit(ThirstBarRenderer.THIRST_ICONS, offsetX, offsetY,0, 16, 0, 9, 9, 25, 9);
+                    guiGraphics.blit(icons, offsetX, offsetY,0, 16, 0, 9, 9, 25, 9);
 
                 offsetX -= 9;
             }
@@ -221,7 +227,12 @@ public class TooltipOverlayHandler {
             offsetX += (foodTooltip.saturationBars - 1) * 7;
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShaderTexture(0, modIcons);
+
+            ResourceLocation appleskinIcons = modIcons;
+            if (ModList.get().isLoaded("supernatural")) {
+                appleskinIcons = SupernaturalHelper.getVampireAppleskinIcons(appleskinIcons, itemStack);
+            }
+            RenderSystem.setShaderTexture(0, appleskinIcons);
             for (int i = 0; i < foodTooltip.saturationBars * 2; i += 2)
             {
                 float effectiveSaturationOfBar = (absModifiedSaturationIncrement - i) / 2f;
@@ -230,7 +241,7 @@ public class TooltipOverlayHandler {
                 if (shouldBeFaded)
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, .5F);
 
-                guiGraphics.blit(modIcons, offsetX, offsetY, 0, effectiveSaturationOfBar >= 1 ? 21 : effectiveSaturationOfBar > 0.5 ? 14 : effectiveSaturationOfBar > 0.25 ? 7 : effectiveSaturationOfBar > 0 ? 0 : 28, modifiedSaturationIncrement >= 0 ? 27 : 34, 7, 7, 256, 256);
+                guiGraphics.blit(appleskinIcons, offsetX, offsetY, 0, effectiveSaturationOfBar >= 1 ? 21 : effectiveSaturationOfBar > 0.5 ? 14 : effectiveSaturationOfBar > 0.25 ? 7 : effectiveSaturationOfBar > 0 ? 0 : 28, modifiedSaturationIncrement >= 0 ? 27 : 34, 7, 7, 256, 256);
 
                 if (shouldBeFaded)
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

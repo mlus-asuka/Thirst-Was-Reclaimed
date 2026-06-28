@@ -1,12 +1,13 @@
 package cn.mlus.thirst.foundation.gui.appleskin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import cn.mlus.thirst.Thirst;
 import cn.mlus.thirst.api.ThirstHelper;
+import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModCapabilities;
 import cn.mlus.thirst.foundation.config.ClientConfig;
 import cn.mlus.thirst.foundation.gui.ThirstBarRenderer;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +22,7 @@ import net.minecraftforge.client.gui.overlay.GuiOverlayManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import org.lwjgl.opengl.GL11;
 import squeek.appleskin.ModConfig;
 import squeek.appleskin.util.IntPoint;
@@ -146,7 +148,12 @@ public class HUDOverlayHandler {
             return;
 
         enableAlpha(alpha);
-        RenderSystem.setShaderTexture(0, modIcons);
+
+        ResourceLocation icons = modIcons;
+        if (ModList.get().isLoaded("supernatural")) {
+            icons = SupernaturalHelper.getVampireAppleskinIcons(modIcons, Minecraft.getInstance().player);
+        }
+        RenderSystem.setShaderTexture(0, icons);
 
         float modifiedSaturation = Math.max(0, Math.min(saturationLevel + saturationGained, 20));
 
@@ -181,7 +188,7 @@ public class HUDOverlayHandler {
             else if (effectiveSaturationOfBar > .25)
                 u = iconSize;
 
-            guiGraphics.blit(modIcons, x, y, u, v, iconSize, iconSize);
+            guiGraphics.blit(icons, x, y, u, v, iconSize, iconSize);
         }
 
         // rebind default icons
@@ -195,7 +202,12 @@ public class HUDOverlayHandler {
             return;
 
         enableAlpha(alpha);
-        RenderSystem.setShaderTexture(0, ThirstBarRenderer.THIRST_ICONS);
+
+        ResourceLocation icons = ThirstBarRenderer.THIRST_ICONS;
+        if (ModList.get().isLoaded("supernatural")) {
+            icons = SupernaturalHelper.getVampireIcons(icons, Minecraft.getInstance().player);
+        }
+        RenderSystem.setShaderTexture(0, icons);
 
         int modifiedFood = Math.max(0, Math.min(20, foodLevel + hungerRestored));
 
@@ -225,7 +237,7 @@ public class HUDOverlayHandler {
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
 
-            guiGraphics.blit(ThirstBarRenderer.THIRST_ICONS, x, y, u, v, iconSize, iconSize, 25, 9);
+            guiGraphics.blit(icons, x, y, u, v, iconSize, iconSize, 25, 9);
         }
 
         disableAlpha();
@@ -233,7 +245,11 @@ public class HUDOverlayHandler {
 
     public static void drawExhaustionOverlay(float exhaustion, GuiGraphics guiGraphics, int right, int top)
     {
-        RenderSystem.setShaderTexture(0, modIcons);
+        ResourceLocation icons = modIcons;
+        if (ModList.get().isLoaded("supernatural")) {
+            icons = SupernaturalHelper.getVampireAppleskinIcons(modIcons, Minecraft.getInstance().player);
+        }
+        RenderSystem.setShaderTexture(0, icons);
 
         float maxExhaustion = 4.0f;
         // clamp between 0 and 1
@@ -242,7 +258,7 @@ public class HUDOverlayHandler {
         int height = 9;
 
         enableAlpha(.75f);
-        guiGraphics.blit(modIcons, right - width, top, 81 - width, 18, width, height);
+        guiGraphics.blit(icons, right - width, top, 81 - width, 18, width, height);
         disableAlpha();
 
         // rebind default icons

@@ -21,5 +21,6 @@
   "command.thirst.enable": "Activar tick de sed para %1$s",
   "command.thirst.disable": "Desactivar tick de sed para %1$s",
 
-  "effect.thirst.quenchness": "Saciedad"
+  "effect.thirst.quenchness": "Saciedad",
+  "effect.thirst.dehydration": "Deshidratación"
 }

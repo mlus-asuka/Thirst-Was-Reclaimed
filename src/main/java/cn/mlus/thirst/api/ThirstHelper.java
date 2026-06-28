@@ -1,6 +1,6 @@
 package cn.mlus.thirst.api;
 
-import com.momosoftworks.coldsweat.api.util.Temperature;
+import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
 import cn.mlus.thirst.content.purity.ContainerWithPurity;
 import cn.mlus.thirst.content.purity.WaterPurity;
 import cn.mlus.thirst.foundation.common.event.RegisterThirstValueEvent;
@@ -11,6 +11,7 @@ import cn.mlus.thirst.foundation.config.ItemSettingsConfig;
 import cn.mlus.thirst.foundation.config.KeyWordConfig;
 import cn.mlus.thirst.foundation.util.ConfigHelper;
 import cn.mlus.thirst.foundation.util.LoadedValue;
+import com.momosoftworks.coldsweat.api.util.Temperature;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
@@ -20,14 +21,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraftforge.fml.ModList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static cn.mlus.thirst.content.purity.WaterPurity.hasPurity;
 
 public class ThirstHelper
 {
@@ -82,6 +82,15 @@ public class ThirstHelper
     {
         return isDrink(itemStack) ||
                 isFood(itemStack) || checkKeywords(itemStack);
+    }
+
+    public static boolean playerRestoresThirst(ItemStack itemStack, Player player)
+    {
+        if (ModList.get().isLoaded("supernatural"))
+        {
+            return SupernaturalHelper.canDrinkItem(itemStack, player);
+        }
+        return true;
     }
 
     public static boolean isDrink(ItemStack itemStack)

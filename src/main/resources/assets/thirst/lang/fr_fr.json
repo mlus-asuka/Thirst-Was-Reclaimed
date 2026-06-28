@@ -21,5 +21,6 @@
   "command.thirst.enable": "Activer la soif pour %1$s",
   "command.thirst.disable": "Désactiver la soif pour %1$s",
 
-  "effect.thirst.quenchness": "Désaltération"
+  "effect.thirst.quenchness": "Désaltération",
+  "effect.thirst.dehydration": "Déshydratation"
 }

@@ -21,5 +21,6 @@
   "command.thirst.enable": "Enable tick Thirst for %1$s",
   "command.thirst.disable": "Disable tick Thirst for %1$s",
 
-  "effect.thirst.quenchness": "Quenchness"
+  "effect.thirst.quenchness": "Quenchness",
+  "effect.thirst.dehydration": "Dehydration"
 }
