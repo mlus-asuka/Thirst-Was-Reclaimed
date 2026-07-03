@@ -1,8 +1,8 @@
 package cn.mlus.thirst.foundation.mixin.create;
 
+import cn.mlus.thirst.content.purity.WaterPurity;
 import com.simibubi.create.content.fluids.transfer.FluidDrainingBehaviour;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import cn.mlus.thirst.content.purity.WaterPurity;
 import net.minecraft.core.BlockPos;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,11 +19,13 @@ public abstract class MixinFluidDrainingBehaviour
         if(!WaterPurity.isEnabled())
             return;
 
-        FluidDrainingBehaviour behaviour = ((FluidDrainingBehaviour)(Object) this);
         FluidStack output = cir.getReturnValue();
-        if (FluidHelper.isWater(output.getFluid())){
-                WaterPurity.addPurity(output,WaterPurity.getBlockPurity(behaviour.getWorld(), rootPos));
-                cir.setReturnValue(output);
-        }
+        if (output.isEmpty() || !FluidHelper.isWater(output.getFluid()))
+            return;
+
+        FluidDrainingBehaviour behaviour = ((FluidDrainingBehaviour)(Object) this);
+        FluidStack copy = output.copy();
+        WaterPurity.addPurity(copy, WaterPurity.getBlockPurity(behaviour.getWorld(), rootPos));
+        cir.setReturnValue(copy);
     }
 }
