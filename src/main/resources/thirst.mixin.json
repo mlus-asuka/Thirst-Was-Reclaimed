@@ -10,13 +10,16 @@
     "MixinBucketItem",
     "MixinCampfireBlockEntity",
     "MixinFluidBucketWrapper",
+    "MixinFluidStack",
+    "MixinFluidTank",
     "MixinFluidUtil",
     "MixinFoodData",
     "MixinItemStack",
     "MixinLayeredCauldronBlock",
-    "MixinPotionItem",
     "MixinPlayer",
+    "MixinPotionItem",
     "accessors.brewinandchewin.KegBlockEntityAccessor",
+    "botania.MixinForgeXplatImpl",
     "brewinandchewin.MixinKegBlockEntity",
     "brewinandchewin.MixinKegFermentingRecipe",
     "create.MixinBasinRecipe",
@@ -31,8 +34,7 @@
     "toughasnails.MixinEmptyCanteenItem",
     "toughasnails.MixinServerConfig",
     "toughasnails.MixinThirstHandler",
-    "toughasnails.MixinThirstHelperImpl",
-    "botania.MixinForgeXplatImpl"
+    "toughasnails.MixinThirstHelperImpl"
   ],
   "client": [
     "MixinLocalPlayer",
