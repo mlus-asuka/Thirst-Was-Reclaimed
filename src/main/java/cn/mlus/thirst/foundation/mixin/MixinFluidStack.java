@@ -1,6 +1,7 @@
 package cn.mlus.thirst.foundation.mixin;
 
 import cn.mlus.thirst.content.purity.WaterPurity;
+import cn.mlus.thirst.content.registry.ThirstComponent;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = FluidStack.class, remap = false)
 public class MixinFluidStack
 {
+    private static final ThreadLocal<Boolean> COMPARING = ThreadLocal.withInitial(() -> false);
+
     @Inject(
         method = "isSameFluidSameComponents(Lnet/neoforged/neoforge/fluids/FluidStack;Lnet/neoforged/neoforge/fluids/FluidStack;)Z",
         at = @At("HEAD"), cancellable = true, remap = false
@@ -28,9 +31,18 @@ public class MixinFluidStack
         if (!WaterPurity.isEnabled()) return;
         if (a == null || b == null) return;
         if (!FluidHelper.isWater(a.getFluid()) || !FluidHelper.isWater(b.getFluid())) return;
+        if (COMPARING.get()) return;
 
-        // For water, only compare fluid type — ignore all components including PURITY
-        // This allows water with purity=0/1/2/3 to coexist in the same tank/pipe
-        cir.setReturnValue(a.getFluid() == b.getFluid());
+        // Compare water ignoring only PURITY — all other components still matter
+        COMPARING.set(true);
+        try {
+            FluidStack aCopy = a.copy();
+            FluidStack bCopy = b.copy();
+            aCopy.remove(ThirstComponent.PURITY);
+            bCopy.remove(ThirstComponent.PURITY);
+            cir.setReturnValue(FluidStack.isSameFluidSameComponents(aCopy, bCopy));
+        } finally {
+            COMPARING.set(false);
+        }
     }
 }
