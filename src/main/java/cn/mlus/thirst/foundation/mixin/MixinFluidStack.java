@@ -1,8 +1,10 @@
 package cn.mlus.thirst.foundation.mixin;
 
 import cn.mlus.thirst.content.purity.WaterPurity;
-import com.simibubi.create.foundation.fluid.FluidHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +30,7 @@ public class MixinFluidStack
     {
         if (!WaterPurity.isEnabled()) return;
         FluidStack self = (FluidStack) (Object) this;
-        if (!FluidHelper.isWater(self.getFluid()) || !FluidHelper.isWater(other.getFluid())) return;
+        if (convertToStill(self.getFluid()) != Fluids.WATER || convertToStill(other.getFluid()) != Fluids.WATER) return;
 
         // For water, compare fluid type and all NBT except "Purity"
         if (self.getFluid() != other.getFluid())
@@ -41,5 +43,15 @@ public class MixinFluidStack
         selfTag.remove("Purity");
         otherTag.remove("Purity");
         cir.setReturnValue(selfTag.equals(otherTag));
+    }
+
+    private static Fluid convertToStill(Fluid fluid) {
+        if (fluid == Fluids.FLOWING_WATER)
+            return Fluids.WATER;
+        if (fluid == Fluids.FLOWING_LAVA)
+            return Fluids.LAVA;
+        if (fluid instanceof FlowingFluid)
+            return ((FlowingFluid) fluid).getSource();
+        return fluid;
     }
 }
