@@ -2,9 +2,8 @@ package cn.mlus.thirst.foundation.mixin;
 
 import cn.mlus.thirst.content.purity.WaterPurity;
 import cn.mlus.thirst.content.registry.ThirstComponent;
-import net.minecraft.world.level.material.Fluid;
+import cn.mlus.thirst.foundation.util.FluidHelper;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +31,7 @@ public class MixinFluidStack
     {
         if (!WaterPurity.isEnabled()) return;
         if (a == null || b == null) return;
-        if (convertToStill(a.getFluid()) != Fluids.WATER || convertToStill(b.getFluid()) != Fluids.WATER) return;
+        if (FluidHelper.convertToStill(a.getFluid()) != Fluids.WATER || FluidHelper.convertToStill(b.getFluid()) != Fluids.WATER) return;
         if (COMPARING.get()) return;
 
         // Compare water ignoring only PURITY — all other components still matter
@@ -46,15 +45,5 @@ public class MixinFluidStack
         } finally {
             COMPARING.set(false);
         }
-    }
-
-    private static Fluid convertToStill(Fluid fluid) {
-        if (fluid == Fluids.FLOWING_WATER)
-            return Fluids.WATER;
-        if (fluid == Fluids.FLOWING_LAVA)
-            return Fluids.LAVA;
-        if (fluid instanceof BaseFlowingFluid)
-            return ((BaseFlowingFluid) fluid).getSource();
-        return fluid;
     }
 }

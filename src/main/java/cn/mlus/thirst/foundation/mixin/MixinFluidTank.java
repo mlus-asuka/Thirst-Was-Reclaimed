@@ -1,7 +1,8 @@
 package cn.mlus.thirst.foundation.mixin;
 
 import cn.mlus.thirst.content.purity.WaterPurity;
-import com.simibubi.create.foundation.fluid.FluidHelper;
+import cn.mlus.thirst.foundation.util.FluidHelper;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -28,7 +29,7 @@ public class MixinFluidTank
         if (action.simulate()) return;
         if (cir.getReturnValue() == 0) return;
         if (fluid.isEmpty()) return;
-        if (!FluidHelper.isWater(fluid.getFluid()) || !FluidHelper.isWater(resource.getFluid())) return;
+        if (FluidHelper.convertToStill(fluid.getFluid()) != Fluids.WATER || FluidHelper.convertToStill(resource.getFluid()) != Fluids.WATER) return;
 
         int storedPurity = WaterPurity.getPurity(fluid);
         int incomingPurity = WaterPurity.getPurity(resource);
