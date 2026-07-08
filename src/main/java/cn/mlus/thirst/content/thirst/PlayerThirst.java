@@ -24,6 +24,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PlayerThirst implements IThirst, INBTSerializable<CompoundTag>
 {
+    public static final String PERSISTENT_THIRST_KEY = "thirst";
+    public static final String PERSISTENT_QUENCHED_KEY = "thirst_quenched";
+    public static final String PERSISTENT_EXHAUSTION_KEY = "thirst_exhaustion";
+    public static final String PERSISTENT_ENABLED_KEY = "thirst_enabled";
+    public static final String PERSISTENT_DATA_KEY = "thirst:player_thirst";
+
     public static boolean checkTombstoneEffects = false;
     public static boolean checkFDEffects = false;
     public static boolean checkLetsDoBakeryEffects = false;
@@ -221,7 +227,24 @@ public class PlayerThirst implements IThirst, INBTSerializable<CompoundTag>
 
     public void updateThirstData(Player player)
     {
+        updatePersistentData(player);
         PacketDistributor.sendToPlayer((ServerPlayer) player, new PlayerThirstSyncMessage(thirst, quenched, exhaustion,shouldTickThirst));
+    }
+
+    public void updatePersistentData(Player player)
+    {
+        CompoundTag persistentData = player.getPersistentData();
+        persistentData.putInt(PERSISTENT_THIRST_KEY, thirst);
+        persistentData.putInt(PERSISTENT_QUENCHED_KEY, quenched);
+        persistentData.putFloat(PERSISTENT_EXHAUSTION_KEY, exhaustion);
+        persistentData.putBoolean(PERSISTENT_ENABLED_KEY, shouldTickThirst);
+
+        CompoundTag thirstData = new CompoundTag();
+        thirstData.putInt("thirst", thirst);
+        thirstData.putInt("quenched", quenched);
+        thirstData.putFloat("exhaustion", exhaustion);
+        thirstData.putBoolean("enable", shouldTickThirst);
+        persistentData.put(PERSISTENT_DATA_KEY, thirstData);
     }
 
     @Override

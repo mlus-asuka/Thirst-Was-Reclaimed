@@ -53,15 +53,19 @@ public class PlayerThirstManager {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            serverPlayer.getData(ModAttachment.PLAYER_THIRST).tick(serverPlayer);
+            PlayerThirst thirstData = serverPlayer.getData(ModAttachment.PLAYER_THIRST);
+            thirstData.tick(serverPlayer);
+            thirstData.updatePersistentData(serverPlayer);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event){
         if(event.getEntity() instanceof ServerPlayer player){
-            player.getData(ModAttachment.PLAYER_THIRST).setThirst(20);
-            player.getData(ModAttachment.PLAYER_THIRST).setQuenched(5);
+            PlayerThirst thirstData = player.getData(ModAttachment.PLAYER_THIRST);
+            thirstData.setThirst(20);
+            thirstData.setQuenched(5);
+            thirstData.updateThirstData(player);
         }
     }
 

@@ -1,6 +1,7 @@
 package cn.mlus.thirst.foundation.network.message;
 
 import cn.mlus.thirst.Thirst;
+import cn.mlus.thirst.content.thirst.PlayerThirst;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import io.netty.buffer.ByteBuf;
@@ -43,6 +44,8 @@ public record PlayerThirstSyncMessage(int thirst,int quenched,float exhaustion,b
             cap.setQuenched(message.quenched);
             cap.setExhaustion(message.exhaustion);
             cap.setShouldTickThirst(message.enable);
+            if(cap instanceof PlayerThirst playerThirst)
+                playerThirst.updatePersistentData(player);
         });
     }
 
