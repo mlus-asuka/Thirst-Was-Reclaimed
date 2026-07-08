@@ -140,7 +140,7 @@ dependencies {
 //    implementation fg.deobf("curse.maven:create-central-kitchen-820977:5232178")
     implementation fg.deobf("curse.maven:glitchcore-955399:5787839")
     implementation fg.deobf("curse.maven:tough-as-nails-246391:5815863")
-    implementation fg.deobf("curse.maven:jade-324717:4768593")
+    implementation fg.deobf("curse.maven:jade-324717:6855440")
     compileOnly fg.deobf("curse.maven:vampirism-become-a-vampire-233029:4783000")
     compileOnly fg.deobf("curse.maven:supernatural-610880:5820483")
     compileOnly fg.deobf("curse.maven:botania-225643:6172172")

@@ -1,13 +1,11 @@
 package cn.mlus.thirst.content.registry;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import cn.mlus.thirst.Thirst;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModCapabilities;
-import cn.mlus.thirst.foundation.network.ThirstModPacketHandler;
-import cn.mlus.thirst.foundation.network.message.PlayerThirstSyncMessage;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -18,7 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,6 +59,7 @@ public class CommandInit {
 
                                             iThirst.setThirst((Integer) arg[0]);
                                             iThirst.setQuenched((Integer) arg[1]);
+                                            iThirst.updateThirstData(player);
                                             context.getSource().sendSuccess(()->MutableComponent.create(new TranslatableContents("command.thirst.set","command.thirst.set",arg)),false);
                                             return 0;
                                         })))
@@ -77,8 +75,7 @@ public class CommandInit {
                                         if (thirstData == null)
                                             continue;
                                         thirstData.setShouldTickThirst(shouldTick);
-                                        ThirstModPacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                                                new PlayerThirstSyncMessage(thirstData.getThirst(), thirstData.getQuenched(), thirstData.getExhaustion(), shouldTick));
+                                        thirstData.updateThirstData(player);
                                         playersName.add(player.getName());
                                     }
 

@@ -21,6 +21,12 @@ import vectorwing.farmersdelight.common.registry.ModEffects;
 
 public class PlayerThirst implements IThirst
 {
+    public static final String PERSISTENT_THIRST_KEY = "thirst";
+    public static final String PERSISTENT_QUENCHED_KEY = "thirst_quenched";
+    public static final String PERSISTENT_EXHAUSTION_KEY = "thirst_exhaustion";
+    public static final String PERSISTENT_ENABLED_KEY = "thirst_enabled";
+    public static final String PERSISTENT_DATA_KEY = "thirst:player_thirst";
+
     public static boolean checkTombstoneEffects = false;
     public static boolean checkFDEffects = false;
     public static boolean checkLetsDoBakeryEffects = false;
@@ -97,6 +103,7 @@ public class PlayerThirst implements IThirst
             extra_quenched = 0;
         this.thirst = Math.min(this.thirst + thirst, 20);
         this.quenched = Math.min(this.quenched + quenched + extra_quenched, this.thirst);
+        updatePersistentData(player);
     }
 
     /**
@@ -207,8 +214,25 @@ public class PlayerThirst implements IThirst
 
     public void updateThirstData(Player player)
     {
+        updatePersistentData(player);
         ThirstModPacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                 new PlayerThirstSyncMessage(thirst, quenched, exhaustion,shouldTickThirst));
+    }
+
+    public void updatePersistentData(Player player)
+    {
+        CompoundTag persistentData = player.getPersistentData();
+        persistentData.putInt(PERSISTENT_THIRST_KEY, thirst);
+        persistentData.putInt(PERSISTENT_QUENCHED_KEY, quenched);
+        persistentData.putFloat(PERSISTENT_EXHAUSTION_KEY, exhaustion);
+        persistentData.putBoolean(PERSISTENT_ENABLED_KEY, shouldTickThirst);
+
+        CompoundTag thirstData = new CompoundTag();
+        thirstData.putInt("thirst", thirst);
+        thirstData.putInt("quenched", quenched);
+        thirstData.putFloat("exhaustion", exhaustion);
+        thirstData.putBoolean("enable", shouldTickThirst);
+        persistentData.put(PERSISTENT_DATA_KEY, thirstData);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.mlus.thirst.foundation.network.message;
 
+import cn.mlus.thirst.content.thirst.PlayerThirst;
 import cn.mlus.thirst.foundation.common.capability.ModCapabilities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -72,6 +73,8 @@ class ClientThirstSyncMessage
                 cap.setQuenched(message.quenched);
                 cap.setExhaustion(message.exhaustion);
                 cap.setShouldTickThirst(message.enable);
+                if(cap instanceof PlayerThirst playerThirst)
+                    playerThirst.updatePersistentData(player);
             });
         }
     }
