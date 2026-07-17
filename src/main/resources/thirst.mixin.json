@@ -10,6 +10,8 @@
     "MixinBucketItem",
     "MixinCampfireBlockEntity",
     "MixinFluidBucketWrapper",
+    "MixinFluidStack",
+    "MixinFluidTank",
     "MixinFluidUtil",
     "MixinFoodData",
     "MixinItemStack",
@@ -19,6 +21,7 @@
     "accessors.farmersdelight.SyncedBlockEntityAccessor",
     "accessors.farmersrespite.KettleBlockEntityAccessor",
     "accessors.supplementaries.FaucetBehaviorsManagerAccessor",
+    "botania.MixinBotania",
     "brewinandchewin.MixinKegBlockEntity",
     "create.MixinBasinRecipe",
     "create.MixinFillingBySpout",
@@ -35,8 +38,7 @@
     "toughasnails.MixinEmptyCanteenItem",
     "toughasnails.MixinServerConfig",
     "toughasnails.MixinThirstHandler",
-    "toughasnails.MixinThirstHelperImpl",
-    "botania.MixinBotania"
+    "toughasnails.MixinThirstHelperImpl"
   ],
   "client": [
     "MixinLocalPlayer",

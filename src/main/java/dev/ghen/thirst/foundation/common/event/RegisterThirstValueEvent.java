@@ -6,8 +6,8 @@ import net.minecraft.world.item.Item;
  * @deprecated Compatibility bridge for addons compiled against the old package.
  * Use {@link cn.mlus.thirst.foundation.common.event.RegisterThirstValueEvent} instead.
  */
-@Deprecated(forRemoval = false)
-@SuppressWarnings({"unused", "deprecation"})
+@Deprecated()
+@SuppressWarnings({"unused"})
 public class RegisterThirstValueEvent extends cn.mlus.thirst.foundation.common.event.RegisterThirstValueEvent
 {
     public RegisterThirstValueEvent()

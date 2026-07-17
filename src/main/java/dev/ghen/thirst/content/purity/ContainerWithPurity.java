@@ -8,7 +8,7 @@ import java.util.function.Predicate;
  * @deprecated Compatibility bridge for addons compiled against the old package.
  * Use {@link cn.mlus.thirst.content.purity.ContainerWithPurity} instead.
  */
-@Deprecated(forRemoval = false)
+@Deprecated()
 @SuppressWarnings("unused")
 public class ContainerWithPurity extends cn.mlus.thirst.content.purity.ContainerWithPurity
 {

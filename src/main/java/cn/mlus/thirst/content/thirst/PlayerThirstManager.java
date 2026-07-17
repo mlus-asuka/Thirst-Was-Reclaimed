@@ -2,9 +2,9 @@ package cn.mlus.thirst.content.thirst;
 
 import cn.mlus.thirst.Thirst;
 import cn.mlus.thirst.api.ThirstHelper;
-import cn.mlus.thirst.content.purity.WaterPurity;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModCapabilities;
+import cn.mlus.thirst.foundation.common.item.DrinkableItem;
 import cn.mlus.thirst.foundation.config.CommonConfig;
 import cn.mlus.thirst.foundation.network.ThirstModPacketHandler;
 import cn.mlus.thirst.foundation.network.message.ItemSettingsHashMessage;
@@ -14,9 +14,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import cn.mlus.thirst.foundation.common.item.DrinkableItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PotionItem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -98,8 +95,6 @@ public class PlayerThirstManager
     {
         if(event.getEntity() instanceof Player && ThirstHelper.itemRestoresThirst(event.getItem()))
         {
-            if(event.getItem().getItem() instanceof PotionItem)
-                return;
             if(event.getItem().getItem().isEdible())
                 return;
             if(event.getItem().getItem() instanceof DrinkableItem)

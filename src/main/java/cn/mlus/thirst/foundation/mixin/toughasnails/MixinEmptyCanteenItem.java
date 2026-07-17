@@ -54,10 +54,10 @@ public abstract class MixinEmptyCanteenItem {
             level.playSound(player, player.getX(), player.getY(), player.getZ(), sound, SoundSource.NEUTRAL, 1.0F, 1.0F);
             level.gameEvent(player, GameEvent.FLUID_PICKUP, blockPos);
 
-            int purity=WaterPurity.getBlockPurity(level, blockPos);
-            if(purity==3){
+            int purity = WaterPurity.getBlockPurity(level, blockPos);
+            if(purity == 3){
                 filledItem = TANItems.PURIFIED_WATER_CANTEEN.get().getDefaultInstance();
-            } else if (purity==2) {
+            } else if (purity == 2) {
                 filledItem = TANItems.WATER_CANTEEN.get().getDefaultInstance();
             }else {
                 filledItem = TANItems.DIRTY_WATER_CANTEEN.get().getDefaultInstance();

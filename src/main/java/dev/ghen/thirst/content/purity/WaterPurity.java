@@ -11,8 +11,8 @@ import net.minecraftforge.fluids.FluidStack;
  * @deprecated Compatibility bridge for addons compiled against the old package.
  * Use {@link cn.mlus.thirst.content.purity.WaterPurity} instead.
  */
-@Deprecated(forRemoval = false)
-@SuppressWarnings({"unused", "deprecation"})
+@Deprecated()
+@SuppressWarnings({"unused"})
 public class WaterPurity extends cn.mlus.thirst.content.purity.WaterPurity
 {
     public static final IntegerProperty BLOCK_PURITY = cn.mlus.thirst.content.purity.WaterPurity.BLOCK_PURITY;
@@ -55,11 +55,6 @@ public class WaterPurity extends cn.mlus.thirst.content.purity.WaterPurity
     public static int getPurity(FluidStack fluid)
     {
         return cn.mlus.thirst.content.purity.WaterPurity.getPurity(fluid);
-    }
-
-    public static void getStaticPurity(ItemStack item)
-    {
-        cn.mlus.thirst.content.purity.WaterPurity.getStaticPurity(item);
     }
 
     public static int getBlockPurity(BlockState blockState)
