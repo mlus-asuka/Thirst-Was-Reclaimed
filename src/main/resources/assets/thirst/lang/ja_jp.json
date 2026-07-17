@@ -5,9 +5,6 @@
   "item.thirst.terracotta_water_bowl": "テラコッタ 水入れ",
   "item.thirst.terracotta_bowl": "テラコッタ 器",
   "item.thirst.clay_bowl": "粘土の器",
-  "thirst.container.kettle.no_water": "水なし",
-  "thirst.container.kettle.has_single_water": "%s 水 1杯 付き",
-  "thirst.container.kettle.has_many_water": "%2$s 水 %1$s 杯 含む",
   "itemGroup.thirst": "渇き",
   "thirst.purity.dirty": "汚れ",
   "thirst.purity.slightly_dirty": "やや汚れ",
@@ -24,5 +21,6 @@
   "command.thirst.enable": "%1$s の渇きを有効化",
   "command.thirst.disable": "%1$s の渇きを無効化",
 
-  "effect.thirst.quenchness": "渇き解消"
+  "effect.thirst.quenchness": "渇き解消",
+  "effect.thirst.dehydration": "脱水"
 }

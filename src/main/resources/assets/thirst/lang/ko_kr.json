@@ -5,9 +5,6 @@
   "item.thirst.terracotta_water_bowl": "테라코타 물그릇",
   "item.thirst.terracotta_bowl": "테라코타 그릇",
   "item.thirst.clay_bowl": "점토 그릇",
-  "thirst.container.kettle.no_water": "물 없음",
-  "thirst.container.kettle.has_single_water": "%s 물 1잔 포함",
-  "thirst.container.kettle.has_many_water": "%2$s 물 %1$s 잔 포함",
   "itemGroup.thirst": "갈증",
   "thirst.purity.dirty": "더러움",
   "thirst.purity.slightly_dirty": "약간 더러움",
@@ -24,5 +21,6 @@
   "command.thirst.enable": "%1$s 에게 갈증 활성화",
   "command.thirst.disable": "%1$s 에게 갈증 비활성화",
 
-  "effect.thirst.quenchness": "갈증 해소"
+  "effect.thirst.quenchness": "갈증 해소",
+  "effect.thirst.dehydration": "탈수"
 }
