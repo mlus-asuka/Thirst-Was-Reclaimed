@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "brewinandchewin:red_rum",
+      "required": false
+    },
+    {
+      "id": "brewinandchewin:strongroot_ale",
+      "required": false
+    }
+  ]
+}
