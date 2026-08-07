@@ -5,14 +5,15 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:item",
+          "type": "minecraft:tag",
+          "expand": true,
           "functions": [
             {
               "function": "minecraft:set_nbt",
               "tag": "{Purity: 3}"
             }
           ],
-          "name": "brewinandchewin:beer",
+          "name": "thirst:brewinandchewin/mineshaft_drinks",
           "weight": 10
         },
         {

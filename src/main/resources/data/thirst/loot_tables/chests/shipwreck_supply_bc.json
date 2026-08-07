@@ -5,7 +5,8 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:item",
+          "type": "minecraft:tag",
+          "expand": true,
           "functions": [
             {
               "function": "minecraft:set_nbt",
@@ -20,26 +21,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "brewinandchewin:mead",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "minecraft:set_nbt",
-              "tag": "{Purity: 3}"
-            },
-            {
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 3.0,
-                "min": 1.0
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "brewinandchewin:salty_folly",
+          "name": "thirst:brewinandchewin/shipwreck_drinks",
           "weight": 10
         },
         {
