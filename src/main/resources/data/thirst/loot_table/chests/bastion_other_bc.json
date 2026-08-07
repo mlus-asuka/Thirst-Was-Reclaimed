@@ -14,25 +14,15 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:item",
+          "type": "minecraft:tag",
+          "expand": true,
           "functions": [
             {
               "function": "minecraft:set_components",
               "components": {"thirst:purity":3}
             }
           ],
-          "name": "brewinandchewin:red_rum",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "minecraft:set_components",
-              "components": {"thirst:purity":3}
-            }
-          ],
-          "name": "brewinandchewin:strongroot_ale",
+          "name": "thirst:brewinandchewin/nether_drinks",
           "weight": 10
         },
         {

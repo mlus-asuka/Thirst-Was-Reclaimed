@@ -14,14 +14,15 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:item",
+          "type": "minecraft:tag",
+          "expand": true,
           "functions": [
             {
               "function": "minecraft:set_components",
               "components": {"thirst:purity":3}
             }
           ],
-          "name": "brewinandchewin:vodka",
+          "name": "thirst:brewinandchewin/dungeon_drinks",
           "weight": 10
         },
         {
