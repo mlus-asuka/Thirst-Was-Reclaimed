@@ -427,15 +427,13 @@ public class WaterPurity
         if(!isEnabled())
             return MISSING_PURITY;
 
-        if(!item.hasTag())
-            return MISSING_PURITY;
-
         CompoundTag tag = item.getTag();
-        if(!tag.contains("Purity"))
+        if(tag == null || !tag.contains("Purity"))
         {
             getStaticPurity(item);
-            if(!tag.contains("Purity"))
-                return MISSING_PURITY;
+            tag = item.getTag();
+            if(tag == null || !tag.contains("Purity"))
+                return MIN_PURITY;
         }
 
         return sanitizePurity(tag.getInt("Purity"));
@@ -446,20 +444,21 @@ public class WaterPurity
      */
 
     public static void getStaticPurity(ItemStack item){
-        assert item.getTag() != null;
         if (FarmersDelightLoaded) {
                 if (item.is(ModItems.MELON_JUICE.get()) || item.is(ModItems.APPLE_CIDER.get())){
-                    if(!item.getTag().contains("Purity") || item.getTag().getInt("Purity") == MISSING_PURITY)
-                         item.getTag().putInt("Purity", MAX_PURITY);
+                    CompoundTag tag = item.getOrCreateTag();
+                    if(!tag.contains("Purity") || tag.getInt("Purity") == MISSING_PURITY)
+                         tag.putInt("Purity", MAX_PURITY);
                 }
         }
         if(TANLoaded){
             if(!Objects.equals(item.getItem().getCreatorModId(item), "toughasnails")) return;
-            item.getTag().putInt("Purity", MAX_PURITY);
+            CompoundTag tag = item.getOrCreateTag();
+            tag.putInt("Purity", MAX_PURITY);
             if(item.is(TANItems.DIRTY_WATER_BOTTLE.get()) || item.is(TANItems.DIRTY_WATER_CANTEEN.get()))
-                item.getTag().putInt("Purity", MIN_PURITY);
+                tag.putInt("Purity", MIN_PURITY);
             if(item.is(TANItems.WATER_CANTEEN.get()))
-                item.getTag().putInt("Purity", 2);
+                tag.putInt("Purity", 2);
         }
     }
 
@@ -472,7 +471,7 @@ public class WaterPurity
             return MISSING_PURITY;
 
         if(!fluid.hasTag() || !fluid.getTag().contains("Purity"))
-            return MISSING_PURITY;
+            return MIN_PURITY;
 
         return sanitizePurity(fluid.getTag().getInt("Purity"));
     }
