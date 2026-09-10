@@ -429,7 +429,7 @@ public class WaterPurity
     }
 
     /**
-     * Reads the purity from an item. Items without NBT are assumed to have MAX_PURITY.
+     * Reads the purity from an item. Items without NBT are assumed to have MIN_PURITY.
      */
     public static int getPurity(ItemStack item)
     {
@@ -441,7 +441,7 @@ public class WaterPurity
             if(tanLoaded && Objects.equals(item.getItem().getCreatorModId(item), "toughasnails"))
                 return tanPurity(item);
 
-            return MAX_PURITY;
+            return MIN_PURITY;
         }
 
         return item.getTag().getInt("Purity");
@@ -467,7 +467,7 @@ public class WaterPurity
     }
 
     /**
-     * Reads the purity from a fluid. Fluids without NBT are assumed to have MAX_PURITY.
+     * Reads the purity from a fluid. Fluids without NBT are assumed to have MIN_PURITY.
      */
     public static int getPurity(FluidStack fluid)
     {
@@ -475,7 +475,7 @@ public class WaterPurity
             return MAX_PURITY;
 
         if(!fluid.hasTag() || !fluid.getTag().contains("Purity"))
-            return MAX_PURITY;
+            return MIN_PURITY;
 
         return fluid.getTag().getInt("Purity");
     }
