@@ -420,9 +420,9 @@ public class WaterPurity
             getStaticPurity(item);
             tag = item.getTag();
             if(tag == null)
-                return MISSING_PURITY;
+                return MIN_PURITY;
             if(!tag.contains("Purity"))
-                return MISSING_PURITY;
+                return MIN_PURITY;
         }
 
         return sanitizePurity(tag.getInt("Purity"));
@@ -460,7 +460,7 @@ public class WaterPurity
             return MISSING_PURITY;
 
         if(!fluid.hasTag() || !fluid.getTag().contains("Purity"))
-            return MISSING_PURITY;
+            return MIN_PURITY;
 
         return sanitizePurity(fluid.getTag().getInt("Purity"));
     }
