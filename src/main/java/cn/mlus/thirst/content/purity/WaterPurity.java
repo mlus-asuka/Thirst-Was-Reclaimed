@@ -416,7 +416,7 @@ public class WaterPurity
             return sanitizePurity(purity);
 
         Integer intrinsicPurity = getIntrinsicPurity(item);
-        return intrinsicPurity == null ? MISSING_COMPONENT_PURITY : intrinsicPurity;
+        return intrinsicPurity == null ? MIN_PURITY : intrinsicPurity;
     }
 
     /**
@@ -510,7 +510,7 @@ public class WaterPurity
             return MISSING_COMPONENT_PURITY;
 
         Integer purity = fluid.get(ThirstComponent.PURITY);
-        return purity == null ? MISSING_COMPONENT_PURITY : sanitizePurity(purity);
+        return purity == null ? MIN_PURITY : sanitizePurity(purity);
     }
 
     /**
