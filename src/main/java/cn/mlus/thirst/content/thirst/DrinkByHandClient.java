@@ -5,8 +5,6 @@ import cn.mlus.thirst.foundation.network.message.DrinkByHandMessage;
 import cn.mlus.thirst.foundation.util.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +35,6 @@ public class DrinkByHandClient
                 HandAvailable = player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() && player.getItemInHand(InteractionHand.OFF_HAND).isEmpty();
             }
             if(HandAvailable){
-                level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_DRINK, SoundSource.NEUTRAL, 1.0F, 1.0F);
                 PacketDistributor.sendToServer(new DrinkByHandMessage(new Vector3f(blockPos.getX(),blockPos.getY(),blockPos.getZ())));
             }
         }

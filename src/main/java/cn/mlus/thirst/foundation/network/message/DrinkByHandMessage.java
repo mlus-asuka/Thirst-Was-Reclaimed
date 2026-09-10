@@ -25,6 +25,7 @@ import org.joml.Vector3f;
 
 public record DrinkByHandMessage(Vector3f pos) implements CustomPacketPayload
 {
+    private static final String DRINK_BY_HAND_COOLDOWN_KEY = "thirstDrinkByHandCooldown";
 
     public static final CustomPacketPayload.Type<DrinkByHandMessage> TYPE = new Type<>(Thirst.asResource("drinkbyhand"));
 
@@ -44,7 +45,11 @@ public record DrinkByHandMessage(Vector3f pos) implements CustomPacketPayload
             {
                 Player player = context.player();
                 Level level = player.level();
-                if(player.getData(ModAttachment.PLAYER_THIRST).getThirst() == 20)
+                if(player.getData(ModAttachment.PLAYER_THIRST).getThirst() >= 20)
+                    return;
+
+                long gameTime = level.getGameTime();
+                if(player.getPersistentData().getLong(DRINK_BY_HAND_COOLDOWN_KEY) > gameTime)
                     return;
 
                 if(!player.isCrouching() || player.isInvulnerable())
@@ -64,8 +69,14 @@ public record DrinkByHandMessage(Vector3f pos) implements CustomPacketPayload
                 if(!level.getFluidState(blockPos).is(FluidTags.WATER))
                     return;
 
+                int cooldown = Math.max(0, CommonConfig.HAND_DRINKING_COOLDOWN.get().intValue());
+                if(cooldown > 0)
+                    player.getPersistentData().putLong(DRINK_BY_HAND_COOLDOWN_KEY, gameTime + cooldown);
+                else
+                    player.getPersistentData().remove(DRINK_BY_HAND_COOLDOWN_KEY);
+
                 int purity = WaterPurity.getBlockPurity(level, blockPos);
-                level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_DRINK, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_DRINK, SoundSource.NEUTRAL, 1.0F, 1.0F);
                 if(WaterPurity.givePurityEffects(player, purity))
                         player.getData(ModAttachment.PLAYER_THIRST).drink(CommonConfig.HAND_DRINKING_HYDRATION.get().intValue(), CommonConfig.HAND_DRINKING_QUENCHED.get().intValue());
             });
