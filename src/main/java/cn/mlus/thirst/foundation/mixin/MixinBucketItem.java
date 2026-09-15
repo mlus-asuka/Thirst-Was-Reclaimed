@@ -40,7 +40,7 @@ public class MixinBucketItem
     private ItemStack addPurity(ItemStack result)
     {
         Integer purity = BUCKET_PURITY.get();
-        if (purity != null)
+        if (purity != null && WaterPurity.isWaterFilledContainer(result))
         {
             WaterPurity.addPurity(result, purity);
         }
