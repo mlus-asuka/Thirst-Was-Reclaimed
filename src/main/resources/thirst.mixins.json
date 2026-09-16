@@ -25,6 +25,8 @@
     "create.MixinGenericItemFilling",
     "create.MixinIHaveGoggleInformation",
     "create.MixinOpenEndedPipe",
+    "sophisticated.MixinTankUpgradeWrapper",
+    "sophisticated.MixinSwapEmptyFluidContainerHandler",
     "toughasnails.MixinEmptyCanteenItem",
     "toughasnails.MixinServerConfig",
     "toughasnails.MixinThirstHandler",

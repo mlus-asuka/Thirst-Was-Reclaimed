@@ -1,0 +1,12 @@
+// Opt-in integration tests; these sources are not included in normal builds.
+allprojects {
+    afterEvaluate {
+        sourceSets.main.java.srcDir('tests/sophisticated/java')
+        sourceSets.main.resources.srcDir('tests/sophisticated/resources')
+        // The pinned development Create version is older than Core's optional compatibility requirement.
+        configurations.runtimeClasspath.exclude(group: 'com.simibubi.create')
+        neoForge.runs.gameTestServer.gameDirectory = rootProject.layout.buildDirectory.dir('run')
+        neoForge.runs.gameTestServer.jvmArguments.add('-XX:TieredStopAtLevel=1')
+        neoForge.runs.gameTestServer.systemProperty('neoforge.enabledGameTestNamespaces', 'thirst,neoforge')
+    }
+}
