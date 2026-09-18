@@ -19,14 +19,9 @@ public class ItemInit {
 
     static {
         ITEMS = DeferredRegister.createItems("thirst");
-        CLAY_BOWL = ITEMS.register("clay_bowl", () -> new Item((new Item.Properties())
-                .stacksTo(64)
-        ));
-        TERRACOTTA_BOWL = ITEMS.register("terracotta_bowl", () -> new Item((new Item.Properties())
-                .stacksTo(64)
-        ));
-        TERRACOTTA_WATER_BOWL = ITEMS.register("terracotta_water_bowl", () -> (new DrinkableItem())
-                .setContainer(TERRACOTTA_BOWL.get())
-        );
+        CLAY_BOWL = ITEMS.registerSimpleItem("clay_bowl", properties -> properties.stacksTo(64));
+        TERRACOTTA_BOWL = ITEMS.registerSimpleItem("terracotta_bowl", properties -> properties.stacksTo(64));
+        TERRACOTTA_WATER_BOWL = ITEMS.registerItem("terracotta_water_bowl",
+                properties -> new DrinkableItem(properties).setContainer(TERRACOTTA_BOWL));
     }
 }

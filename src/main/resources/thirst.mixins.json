@@ -16,28 +16,11 @@
     "MixinFluidUtil",
     "MixinFoodData",
     "MixinItemStack",
-    "MixinLayeredCauldronBlock",
-    "MixinPlayer",
-    "MixinPotionItem",
-    "accessors.farmersdelight.SyncedBlockEntityAccessor",
-    "create.MixinBasinRecipe",
-    "create.MixinFluidDrainingBehaviour",
-    "create.MixinGenericItemEmptying",
-    "create.MixinGenericItemFilling",
-    "create.MixinIHaveGoggleInformation",
-    "create.MixinOpenEndedPipe",
-    "sophisticated.MixinSwapEmptyFluidContainerHandler",
-    "sophisticated.MixinTankUpgradeWrapper",
-    "toughasnails.MixinEmptyCanteenItem",
-    "toughasnails.MixinServerConfig",
-    "toughasnails.MixinThirstHandler",
-    "toughasnails.MixinThirstHelperImpl"
+    "MixinLayeredCauldronBlock"
   ],
   "client": [
     "MixinGui",
-    "MixinGuiGraphics",
-    "MixinLocalPlayer",
-    "toughasnails.MixinTooltipHandler"
+    "MixinLocalPlayer"
   ],
   "injectors": {
     "defaultRequire": 1

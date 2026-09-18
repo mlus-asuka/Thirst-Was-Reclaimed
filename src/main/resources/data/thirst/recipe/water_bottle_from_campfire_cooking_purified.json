@@ -1,8 +1,7 @@
 {
   "type": "minecraft:campfire_cooking",
-  "ingredient":[
-    {
-      "type": "neoforge:components",
+  "ingredient": {
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "minecraft:potion",
       "components": {
         "thirst:purity": 2,
@@ -10,8 +9,7 @@
           "potion": "minecraft:water"
         }
       }
-    }
-  ],
+    },
   "result": {
     "id":"minecraft:potion",
     "count": 1,

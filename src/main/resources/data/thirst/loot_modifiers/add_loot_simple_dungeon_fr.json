@@ -4,6 +4,9 @@
   "conditions":
   [
     {
+      "condition": "thirst:loot_config"
+    },
+    {
       "condition": "neoforge:loot_table_id",
       "loot_table_id": "minecraft:chests/simple_dungeon"
     }

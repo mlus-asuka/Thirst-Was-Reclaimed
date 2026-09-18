@@ -1,14 +1,12 @@
 package cn.mlus.thirst.foundation.network.message;
 
 import cn.mlus.thirst.Thirst;
-import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
 import cn.mlus.thirst.content.purity.WaterPurity;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import cn.mlus.thirst.foundation.config.CommonConfig;
 import cn.mlus.thirst.foundation.util.MathHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.sounds.SoundEvents;
@@ -18,7 +16,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -29,11 +26,19 @@ public record DrinkByHandMessage(Vector3f pos) implements CustomPacketPayload
 
     public static final CustomPacketPayload.Type<DrinkByHandMessage> TYPE = new Type<>(Thirst.asResource("drinkbyhand"));
 
-    public static final StreamCodec<ByteBuf, DrinkByHandMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F,
-            DrinkByHandMessage::pos,
-            DrinkByHandMessage::new
-    );
+    public static final StreamCodec<ByteBuf, DrinkByHandMessage> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public DrinkByHandMessage decode(ByteBuf buffer) {
+            return new DrinkByHandMessage(new Vector3f(buffer.readFloat(), buffer.readFloat(), buffer.readFloat()));
+        }
+
+        @Override
+        public void encode(ByteBuf buffer, DrinkByHandMessage message) {
+            buffer.writeFloat(message.pos.x());
+            buffer.writeFloat(message.pos.y());
+            buffer.writeFloat(message.pos.z());
+        }
+    };
 
     public static void clientHandle(final DrinkByHandMessage data, final IPayloadContext context){
 
@@ -49,7 +54,7 @@ public record DrinkByHandMessage(Vector3f pos) implements CustomPacketPayload
                     return;
 
                 long gameTime = level.getGameTime();
-                if(player.getPersistentData().getLong(DRINK_BY_HAND_COOLDOWN_KEY) > gameTime)
+                if(player.getPersistentData().getLongOr(DRINK_BY_HAND_COOLDOWN_KEY, 0L) > gameTime)
                     return;
 
                 if(!player.isCrouching() || player.isInvulnerable())
@@ -58,12 +63,6 @@ public record DrinkByHandMessage(Vector3f pos) implements CustomPacketPayload
                 if(!player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()
                         || !player.getItemInHand(InteractionHand.OFF_HAND).isEmpty())
                     return;
-
-                if (ModList.get().isLoaded("supernatural")) {
-                    if (SupernaturalHelper.isVampireCheck(player)) {
-                        return;
-                    }
-                }
 
                 BlockPos blockPos = MathHelper.getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY).getBlockPos();
                 if(!level.getFluidState(blockPos).is(FluidTags.WATER))

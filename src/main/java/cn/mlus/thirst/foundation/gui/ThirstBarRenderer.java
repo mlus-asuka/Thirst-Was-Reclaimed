@@ -1,18 +1,13 @@
 package cn.mlus.thirst.foundation.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import de.teamlapen.vampirism.util.Helper;
 import cn.mlus.thirst.Thirst;
-import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import cn.mlus.thirst.foundation.config.ClientConfig;
-import cn.mlus.thirst.foundation.gui.appleskin.HUDOverlayHandler;
-import net.neoforged.fml.ModList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
@@ -23,13 +18,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class ThirstBarRenderer
 {
     public static IThirst PLAYER_THIRST = null;
-    public static ResourceLocation THIRST_ICONS = Thirst.asResource("textures/gui/thirst_icons.png");
+    public static Identifier THIRST_ICONS = Thirst.asResource("textures/gui/thirst_icons.png");
     public static Boolean cancelRender = false;
-    public static Boolean checkIfPlayerIsVampire = false;
     private static int lastBarRight;
     private static int lastBarTop;
     private static boolean renderedThisFrame;
-    static Minecraft minecraft = Minecraft.getInstance();
     protected final static RandomSource random = RandomSource.create();
 
     @SubscribeEvent
@@ -38,27 +31,23 @@ public class ThirstBarRenderer
         if (event.getType() != RenderGuiEvent.Type.AIR)
             return;
 
+        Minecraft minecraft = Minecraft.getInstance();
         renderedThisFrame = false;
         cancelRender = !shouldRender(minecraft);
         if (cancelRender)
             return;
-
-        setupOverlayRenderState(true, false);
 
         render(event.getScreenWidth(),event.getScreenHeight(),event.getGuiGraphics());
     }
 
     public static boolean shouldRender(Minecraft minecraft)
     {
-        if (minecraft.player == null)
+        if (minecraft == null || minecraft.player == null)
             return false;
 
         Entity vehicle = minecraft.player.getVehicle();
         boolean isMounted = vehicle != null && vehicle.showVehicleHealth();
-        if (isMounted || minecraft.options.hideGui || !HUDOverlayHandler.shouldDrawSurvivalElements(minecraft))
-            return false;
-
-        if(checkIfPlayerIsVampire && Helper.isVampire(minecraft.player))
+        if (isMounted || minecraft.options.hideGui || minecraft.gameMode == null || !minecraft.gameMode.canHurtPlayer())
             return false;
 
         return minecraft.player.isAlive() && minecraft.player.getData(ModAttachment.PLAYER_THIRST).getShouldTickThirst();
@@ -71,42 +60,23 @@ public class ThirstBarRenderer
 
     public static int getBarTop(int height)
     {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft == null || minecraft.gui == null)
+            return height - 39 + ClientConfig.THIRST_BAR_Y_OFFSET.get();
+
         return renderedThisFrame ? lastBarTop : height - minecraft.gui.rightHeight + ClientConfig.THIRST_BAR_Y_OFFSET.get();
     }
 
-    public static void setupOverlayRenderState(boolean blend, boolean depthTest)
+    public static void render(int width, int height, GuiGraphicsExtractor guiGraphics)
     {
-        if (blend)
-        {
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-        }
-        else RenderSystem.disableBlend();
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft == null || minecraft.player == null || minecraft.gui == null)
+            return;
 
-        if (depthTest)
-            RenderSystem.enableDepthTest();
-        else
-            RenderSystem.disableDepthTest();
+        PLAYER_THIRST = minecraft.player.getData(ModAttachment.PLAYER_THIRST);
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-    }
+        Identifier thirst_icons = THIRST_ICONS;
 
-    public static void render(int width, int height, GuiGraphics guiGraphics)
-    {
-        minecraft.getProfiler().push("thirst");
-        if (PLAYER_THIRST == null || minecraft.player.tickCount % 40 == 0)
-        {
-            PLAYER_THIRST = minecraft.player.getData(ModAttachment.PLAYER_THIRST);
-        }
-
-        ResourceLocation thirst_icons = THIRST_ICONS;
-        if (ModList.get().isLoaded("supernatural")) {
-            thirst_icons = SupernaturalHelper.getVampireIcons(thirst_icons, minecraft.player);
-        }
-
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, thirst_icons);
         int left = width / 2 + 91 + ClientConfig.THIRST_BAR_X_OFFSET.get();
         int top = height - minecraft.gui.rightHeight + ClientConfig.THIRST_BAR_Y_OFFSET.get();
         minecraft.gui.rightHeight += 10;
@@ -127,15 +97,12 @@ public class ThirstBarRenderer
                 y = top + (random.nextInt(3) - 1);
             }
 
-            guiGraphics.blit(thirst_icons, x, y, 0, 0, 9, 9, 25, 9);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, thirst_icons, x, y, 0, 0, 9, 9, 25, 9);
 
             if (idx < level)
-                guiGraphics.blit(thirst_icons, x, y, 16, 0, 9, 9, 25, 9);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, thirst_icons, x, y, 16, 0, 9, 9, 25, 9);
             else if (idx == level)
-                guiGraphics.blit(thirst_icons, x, y, 8, 0, 9, 9, 25, 9);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, thirst_icons, x, y, 8, 0, 9, 9, 25, 9);
         }
-        RenderSystem.disableBlend();
-
-        minecraft.getProfiler().pop();
     }
 }

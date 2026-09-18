@@ -1,11 +1,9 @@
 package cn.mlus.thirst.foundation.util;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 import java.util.*;
@@ -26,11 +24,11 @@ public class ConfigHelper
             if (itemID.startsWith("#"))
             {
                 final String tagID = itemID.replace("#", "");
-                Optional<Pair<TagKey<Item>, HolderSet.Named<Item>>> optionalTag = BuiltInRegistries.ITEM.getTags().filter(tag ->
-                        tag.getFirst().location().toString().equals(tagID)).findFirst();
+                Optional<HolderSet.Named<Item>> optionalTag = BuiltInRegistries.ITEM.getTags().filter(tag ->
+                        tag.key().location().toString().equals(tagID)).findFirst();
                 optionalTag.ifPresent(itemITag ->
                 {
-                    for (Holder<Item> item : optionalTag.get().getSecond().stream().toList())
+                    for (Holder<Item> item : itemITag.stream().toList())
                     {
                         map.put(item.value(), new Number[]{(Number) entry.get(1), (Number) entry.get(2)});
                     }
@@ -38,7 +36,7 @@ public class ConfigHelper
             }
             else
             {
-                Item newItem = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemID));
+                Item newItem = BuiltInRegistries.ITEM.getValue(Identifier.tryParse(itemID));
 
                 if (newItem != null) map.put(newItem, new Number[]{(Number) entry.get(1), (Number) entry.get(2)});
             }
@@ -52,18 +50,18 @@ public class ConfigHelper
             if (itemID.startsWith("#"))
             {
                 final String tagID = itemID.replace("#", "");
-                Optional<Pair<TagKey<Item>, HolderSet.Named<Item>>> optionalTag = BuiltInRegistries.ITEM.getTags().filter(tag ->
-                        tag.getFirst().location().toString().equals(tagID)).findFirst();
+                Optional<HolderSet.Named<Item>> optionalTag = BuiltInRegistries.ITEM.getTags().filter(tag ->
+                        tag.key().location().toString().equals(tagID)).findFirst();
                 optionalTag.ifPresent(itemITag ->
                         {
-                            for (Holder<Item> item : optionalTag.get().getSecond().stream().toList()) {
+                            for (Holder<Item> item : itemITag.stream().toList()) {
                                 list.add(item.value());
                             }
                         });
             }
             else
             {
-                Item newItem = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemID));
+                Item newItem = BuiltInRegistries.ITEM.getValue(Identifier.tryParse(itemID));
 
                 if (newItem != null) list.add(newItem);
             }

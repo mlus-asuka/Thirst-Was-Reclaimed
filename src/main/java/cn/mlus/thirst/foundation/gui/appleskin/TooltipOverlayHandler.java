@@ -1,267 +1,114 @@
 package cn.mlus.thirst.foundation.gui.appleskin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Either;
 import cn.mlus.thirst.Thirst;
-import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
+import cn.mlus.thirst.api.ThirstHelper;
 import cn.mlus.thirst.foundation.gui.ThirstBarRenderer;
-import net.minecraft.client.gui.GuiGraphics;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
+import com.mojang.datafixers.util.Either;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
-import cn.mlus.thirst.api.ThirstHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.ItemStack;
 import squeek.appleskin.ModConfig;
 import squeek.appleskin.helpers.KeyHelper;
 
+public final class TooltipOverlayHandler {
+    private static final Identifier MOD_ICONS = Thirst.asResource("textures/gui/appleskin_icons.png");
 
-@OnlyIn(Dist.CLIENT)
-public class TooltipOverlayHandler {
-    private static final ResourceLocation modIcons;
-    private static final TextureOffsets normalBarTextureOffsets;
-    private static final TextureOffsets rottenBarTextureOffsets;
-
-    public TooltipOverlayHandler() {
+    private TooltipOverlayHandler() {
     }
 
     public static void init() {
-        NeoForge.EVENT_BUS.register(new TooltipOverlayHandler());
+        NeoForge.EVENT_BUS.addListener(TooltipOverlayHandler::gatherTooltips);
     }
 
     public static void register(RegisterClientTooltipComponentFactoriesEvent event) {
-        event.register(FoodTooltip.class, FoodTooltipRenderer::new);
+        event.register(ThirstTooltip.class, ThirstTooltipRenderer::new);
     }
 
-    @SubscribeEvent
-    public void gatherTooltips(RenderTooltipEvent.GatherComponents event) {
-        if (!event.isCanceled()) {
-            ItemStack hoveredStack = event.getItemStack();
-            if (shouldShowTooltip(hoveredStack)) {
-
-                FoodTooltip foodTooltip = new FoodTooltip(hoveredStack);
-                if (foodTooltip.shouldRenderHungerBars()) {
-                    event.getTooltipElements().add(Either.right(foodTooltip));
-                }
-            }
+    private static void gatherTooltips(RenderTooltipEvent.GatherComponents event) {
+        ItemStack stack = event.getItemStack();
+        if (!event.isCanceled() && shouldShowTooltip(stack)) {
+            ThirstTooltip tooltip = new ThirstTooltip(stack);
+            if (tooltip.thirstBars > 0) event.getTooltipElements().add(Either.right(tooltip));
         }
     }
 
-    private static boolean shouldShowTooltip(ItemStack hoveredStack) {
-        if (hoveredStack.isEmpty()) {
-            return false;
-        } else {
-            boolean shouldShowTooltip = ModConfig.SHOW_FOOD_VALUES_IN_TOOLTIP.get() && KeyHelper.isShiftKeyDown() || ModConfig.ALWAYS_SHOW_FOOD_VALUES_TOOLTIP.get();
-            if (!shouldShowTooltip) {
-                return false;
-            } else {
-                return ThirstHelper.itemRestoresThirst(hoveredStack);
-            }
+    private static boolean shouldShowTooltip(ItemStack stack) {
+        boolean enabled = ModConfig.SHOW_FOOD_VALUES_IN_TOOLTIP.get() && KeyHelper.isShiftKeyDown()
+                || ModConfig.ALWAYS_SHOW_FOOD_VALUES_TOOLTIP.get();
+        return !stack.isEmpty() && enabled && ThirstHelper.itemRestoresThirst(stack);
+    }
+
+    static final class ThirstTooltip implements TooltipComponent {
+        private final ItemStack stack;
+        private final int thirstBars;
+        private final int quenchedBars;
+        private final String thirstText;
+        private final String quenchedText;
+
+        private ThirstTooltip(ItemStack stack) {
+            this.stack = stack.copy();
+            int thirst = ThirstHelper.getThirst(stack);
+            float quenched = ThirstHelper.getQuenched(stack);
+            int rawThirstBars = (int) Math.ceil(Math.abs(thirst) / 2.0F);
+            int rawQuenchedBars = (int) Math.ceil(Math.abs(quenched) / 2.0F);
+            this.thirstBars = rawThirstBars > 10 ? 1 : rawThirstBars;
+            this.quenchedBars = rawQuenchedBars > 10 || rawQuenchedBars == 0 ? 1 : rawQuenchedBars;
+            this.thirstText = rawThirstBars > 10 ? "x" + rawThirstBars : null;
+            this.quenchedText = rawQuenchedBars > 10 || rawQuenchedBars == 0 ? "x" + rawQuenchedBars : null;
         }
     }
 
-    static {
-        modIcons = Thirst.asResource("textures/gui/appleskin_icons.png");
-        normalBarTextureOffsets = new TextureOffsets();
-        normalBarTextureOffsets.containerNegativeHunger = 43;
-        normalBarTextureOffsets.containerExtraHunger = 133;
-        normalBarTextureOffsets.containerNormalHunger = 16;
-        normalBarTextureOffsets.containerPartialHunger = 124;
-        normalBarTextureOffsets.containerMissingHunger = 34;
-        normalBarTextureOffsets.shankMissingFull = 70;
-        normalBarTextureOffsets.shankMissingPartial = normalBarTextureOffsets.shankMissingFull + 9;
-        normalBarTextureOffsets.shankFull = 52;
-        normalBarTextureOffsets.shankPartial = normalBarTextureOffsets.shankFull + 9;
-        rottenBarTextureOffsets = new TextureOffsets();
-        rottenBarTextureOffsets.containerNegativeHunger = normalBarTextureOffsets.containerNegativeHunger;
-        rottenBarTextureOffsets.containerExtraHunger = normalBarTextureOffsets.containerExtraHunger;
-        rottenBarTextureOffsets.containerNormalHunger = normalBarTextureOffsets.containerNormalHunger;
-        rottenBarTextureOffsets.containerPartialHunger = normalBarTextureOffsets.containerPartialHunger;
-        rottenBarTextureOffsets.containerMissingHunger = normalBarTextureOffsets.containerMissingHunger;
-        rottenBarTextureOffsets.shankMissingFull = 106;
-        rottenBarTextureOffsets.shankMissingPartial = rottenBarTextureOffsets.shankMissingFull + 9;
-        rottenBarTextureOffsets.shankFull = 88;
-        rottenBarTextureOffsets.shankPartial = rottenBarTextureOffsets.shankFull + 9;
-    }
+    static final class ThirstTooltipRenderer implements ClientTooltipComponent {
+        private final ThirstTooltip tooltip;
 
-    static class FoodTooltip implements TooltipComponent {
-        private final int biggestHunger;
-        private final float biggestSaturationIncrement;
-        private int hungerBars;
-        private String hungerBarsText;
-        private int saturationBars;
-        private String saturationBarsText;
-        private final ItemStack itemStack;
-
-        FoodTooltip(ItemStack itemStack) {
-            this.itemStack = itemStack;
-            this.biggestHunger = ThirstHelper.getThirst(itemStack);
-            this.biggestSaturationIncrement = ThirstHelper.getQuenched(itemStack);
-            this.hungerBars = (int)Math.ceil((float)Math.abs(this.biggestHunger) / 2.0F);
-            if (this.hungerBars > 10) {
-                this.hungerBarsText = "x" + (this.biggestHunger < 0 ? -1 : 1) * this.hungerBars;
-                this.hungerBars = 1;
-            }
-
-            this.saturationBars = (int)Math.ceil(Math.abs(this.biggestSaturationIncrement) / 2.0F);
-            if (this.saturationBars > 10 || this.saturationBars == 0) {
-                this.saturationBarsText = "x" + (this.biggestSaturationIncrement < 0.0F ? -1 : 1) * this.saturationBars;
-                this.saturationBars = 1;
-            }
-
-        }
-
-        boolean shouldRenderHungerBars() {
-            return this.hungerBars > 0;
-        }
-    }
-
-    static class TextureOffsets {
-        int containerNegativeHunger;
-        int containerExtraHunger;
-        int containerNormalHunger;
-        int containerPartialHunger;
-        int containerMissingHunger;
-        int shankMissingFull;
-        int shankMissingPartial;
-        int shankFull;
-        int shankPartial;
-
-        TextureOffsets() {
-        }
-    }
-
-    static class FoodTooltipRenderer implements ClientTooltipComponent {
-        private final FoodTooltip foodTooltip;
-
-        FoodTooltipRenderer(FoodTooltip foodTooltip) {
-            this.foodTooltip = foodTooltip;
-        }
-
-        public int getHeight() {
-            return 20;
-        }
-
-        public int getWidth(@NotNull Font font) {
-            int hungerBarsWidth = this.foodTooltip.hungerBars * 9;
-            if (this.foodTooltip.hungerBarsText != null) {
-                hungerBarsWidth += font.width(this.foodTooltip.hungerBarsText);
-            }
-
-            int saturationBarsWidth = this.foodTooltip.saturationBars * 7;
-            if (this.foodTooltip.saturationBarsText != null) {
-                saturationBarsWidth += font.width(this.foodTooltip.saturationBarsText);
-            }
-
-            return Math.max(hungerBarsWidth, saturationBarsWidth) + 2;
+        private ThirstTooltipRenderer(ThirstTooltip tooltip) {
+            this.tooltip = tooltip;
         }
 
         @Override
-        public void renderImage(@NotNull Font font, int x, int y, @NotNull GuiGraphics guiGraphics) {
-            ItemStack itemStack = foodTooltip.itemStack;
-            Minecraft mc = Minecraft.getInstance();
-            if (!shouldShowTooltip(itemStack))
-                return;
+        public int getHeight(@NotNull Font font) {
+            return 20;
+        }
 
-            Screen gui = mc.screen;
-            if (gui == null)
-                return;
+        @Override
+        public int getWidth(@NotNull Font font) {
+            int thirstWidth = tooltip.thirstBars * 9 + (tooltip.thirstText == null ? 0 : font.width(tooltip.thirstText));
+            int quenchedWidth = tooltip.quenchedBars * 7 + (tooltip.quenchedText == null ? 0 : font.width(tooltip.quenchedText));
+            return Math.max(thirstWidth, quenchedWidth) + 2;
+        }
 
-            RenderSystem.enableDepthTest();
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
+        @Override
+        public void extractImage(@NotNull Font font, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor graphics) {
+            if (!shouldShowTooltip(tooltip.stack)) return;
 
-            int offsetX = x;
-            int offsetY = y;
-
-            int thirst = ThirstHelper.getThirst(itemStack);
-
-            // Render from right to left so that the icons 'face' the right way
-            offsetX += (foodTooltip.hungerBars - 1) * 9;
-
-            ResourceLocation icons = ThirstBarRenderer.THIRST_ICONS;
-            if (ModList.get().isLoaded("supernatural")) {
-                icons = SupernaturalHelper.getVampireIcons(icons, itemStack);
+            int thirst = ThirstHelper.getThirst(tooltip.stack);
+            int iconX = x + (tooltip.thirstBars - 1) * 9;
+            for (int i = 0; i < tooltip.thirstBars * 2; i += 2) {
+                int u = thirst == i + 1 ? 8 : 16;
+                graphics.blit(RenderPipelines.GUI_TEXTURED, ThirstBarRenderer.THIRST_ICONS, iconX, y, u, 0, 9, 9, 25, 9);
+                iconX -= 9;
             }
-            RenderSystem.setShaderTexture(0, icons);
-            for (int i = 0; i < foodTooltip.hungerBars * 2; i += 2)
-            {
-                if (thirst == i + 1)
-                    guiGraphics.blit(icons, offsetX, offsetY,0, 8, 0, 9, 9, 25, 9);
-                else
-                    guiGraphics.blit(icons, offsetX, offsetY,0, 16, 0, 9, 9, 25, 9);
+            if (tooltip.thirstText != null) graphics.text(font, tooltip.thirstText, x + 11, y + 1, 0xFFAAAAAA);
 
-                offsetX -= 9;
+            float quenched = ThirstHelper.getQuenched(tooltip.stack);
+            float absolute = Math.abs(quenched);
+            iconX = x + (tooltip.quenchedBars - 1) * 7;
+            for (int i = 0; i < tooltip.quenchedBars * 2; i += 2) {
+                float amount = (absolute - i) / 2.0F;
+                int u = amount >= 1 ? 21 : amount > .5F ? 14 : amount > .25F ? 7 : amount > 0 ? 0 : 28;
+                int color = absolute <= i ? 0x80FFFFFF : 0xFFFFFFFF;
+                graphics.blit(RenderPipelines.GUI_TEXTURED, MOD_ICONS, iconX, y + 10, u, quenched >= 0 ? 27 : 34, 7, 7, 256, 256, color);
+                iconX -= 7;
             }
-            if (foodTooltip.hungerBarsText != null)
-            {
-                PoseStack poseStack = guiGraphics.pose();
-                offsetX += 18;
-                poseStack.pushPose();
-                poseStack.translate(offsetX, offsetY, 0);
-                poseStack.scale(0.75f, 0.75f, 0.75f);
-                guiGraphics.drawCenteredString(font, foodTooltip.hungerBarsText, 2, 2, 0xFFAAAAAA);
-                poseStack.popPose();
-            }
-
-            offsetX = x;
-            offsetY += 10;
-
-            float modifiedSaturationIncrement = ThirstHelper.getQuenched(itemStack);
-            float absModifiedSaturationIncrement = Math.abs(modifiedSaturationIncrement);
-
-            // Render from right to left so that the icons 'face' the right way
-            offsetX += (foodTooltip.saturationBars - 1) * 7;
-
-            ResourceLocation appleskinIcons = modIcons;
-            if (ModList.get().isLoaded("supernatural")) {
-                appleskinIcons = SupernaturalHelper.getVampireAppleskinIcons(appleskinIcons, itemStack);
-            }
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShaderTexture(0, appleskinIcons);
-            for (int i = 0; i < foodTooltip.saturationBars * 2; i += 2)
-            {
-                float effectiveSaturationOfBar = (absModifiedSaturationIncrement - i) / 2f;
-
-                boolean shouldBeFaded = absModifiedSaturationIncrement <= i;
-                if (shouldBeFaded)
-                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, .5F);
-
-                guiGraphics.blit(appleskinIcons, offsetX, offsetY, 0, effectiveSaturationOfBar >= 1 ? 21 : effectiveSaturationOfBar > 0.5 ? 14 : effectiveSaturationOfBar > 0.25 ? 7 : effectiveSaturationOfBar > 0 ? 0 : 28, modifiedSaturationIncrement >= 0 ? 27 : 34, 7, 7, 256, 256);
-
-                if (shouldBeFaded)
-                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-                offsetX -= 7;
-            }
-            if (foodTooltip.saturationBarsText != null)
-            {
-                offsetX += 14;
-                PoseStack poseStack = guiGraphics.pose();
-                poseStack.pushPose();
-                poseStack.translate(offsetX, offsetY, 0);
-                poseStack.scale(0.75f, 0.75f, 0.75f);
-                guiGraphics.drawCenteredString(font, foodTooltip.saturationBarsText, 2, 1, 0xFFAAAAAA);
-                poseStack.popPose();
-            }
-
-            RenderSystem.disableBlend();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShaderTexture(0, appleskinIcons);
-
-            // reset to drawHoveringText state
-            RenderSystem.disableDepthTest();
+            if (tooltip.quenchedText != null) graphics.text(font, tooltip.quenchedText, x + 9, y + 10, 0xFFAAAAAA);
         }
     }
 }

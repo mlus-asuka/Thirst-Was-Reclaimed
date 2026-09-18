@@ -1,6 +1,7 @@
 package cn.mlus.thirst.foundation.common.effect;
 
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.InstantenousMobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,8 +13,8 @@ public class QuenchnessEffect extends InstantenousMobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity p_295892_, int p_296026_) {
-        if (!p_295892_.level().isClientSide && p_295892_ instanceof Player player) {
+    public boolean applyEffectTick(ServerLevel level, LivingEntity p_295892_, int p_296026_) {
+        if (p_295892_ instanceof Player player) {
             player.getData(ModAttachment.PLAYER_THIRST).drink(1,1);
         }
 

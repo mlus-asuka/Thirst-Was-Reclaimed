@@ -40,7 +40,7 @@ public class MixinCampfireBlockEntity
                     double d0 = (double)pos.getX() + 0.5 - (double)((float)direction.getStepX() * f) + (double)((float)direction.getClockWise().getStepX() * f);
                     double d1 = (double)pos.getY() + 0.6;
                     double d2 = (double)pos.getZ() + 0.5 - (double)((float)direction.getStepZ() * f) + (double)((float)direction.getClockWise().getStepZ() * f);
-                    level.addParticle(ParticleTypes.EFFECT, d0, d1, d2, 0.0, 0.001, 0.0);
+                    level.addParticle(net.minecraft.core.particles.SpellParticleOption.create(ParticleTypes.EFFECT, 0xFFFFFF, 1.0F), d0, d1, d2, 0.0, 0.001, 0.0);
                 }
             }
         }

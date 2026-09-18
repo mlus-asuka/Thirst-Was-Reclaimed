@@ -2,21 +2,17 @@ package cn.mlus.thirst.compat.jade;
 
 import cn.mlus.thirst.Thirst;
 import cn.mlus.thirst.content.purity.WaterPurity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
 import snownee.jade.api.*;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.*;
 import snownee.jade.util.CommonProxy;
-import snownee.jade.util.JadeForgeUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,8 +20,8 @@ import java.util.Objects;
 @WailaPlugin(Thirst.ID)
 public class ThirstJadePlugin implements IWailaPlugin
 {
-    private static final ResourceLocation WATER_CAULDRON_FLUID = Thirst.asResource("water_cauldron_fluid");
-    private static final ResourceLocation FLUID_STORAGE = Thirst.asResource("fluid_storage");
+    private static final Identifier WATER_CAULDRON_FLUID = Thirst.asResource("water_cauldron_fluid");
+    private static final Identifier FLUID_STORAGE = Thirst.asResource("fluid_storage");
 
     @Override
     public void register(IWailaCommonRegistration registration)
@@ -41,12 +37,12 @@ public class ThirstJadePlugin implements IWailaPlugin
         registration.registerFluidStorageClient(PurityFluidClientProvider.DEFAULT_STORAGE);
     }
 
-    private enum WaterCauldronFluidProvider implements IServerExtensionProvider<CompoundTag>
+    private enum WaterCauldronFluidProvider implements IServerExtensionProvider<FluidView.Data>
     {
         INSTANCE;
 
         @Override
-        public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor)
+        public List<ViewGroup<FluidView.Data>> getGroups(Accessor<?> accessor)
         {
             if (!WaterPurity.isEnabled() || !(accessor instanceof BlockAccessor blockAccessor))
                 return null;
@@ -56,16 +52,17 @@ public class ThirstJadePlugin implements IWailaPlugin
                 return null;
 
             int level = blockState.getValue(LayeredCauldronBlock.LEVEL);
-            FluidStack fluid = new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME * level / 3);
+            long bucketVolume = JadeFluidObject.bucketVolume();
+            int amount = (int) (bucketVolume * level / 3);
+            FluidStack fluid = new FluidStack(Fluids.WATER, amount);
             WaterPurity.addPurity(fluid, WaterPurity.getBlockPurity(blockState));
 
-            return List.of(new ViewGroup<>(List.of(FluidView.writeDefault(
-                    JadeForgeUtils.fromFluidStack(fluid),
-                    FluidType.BUCKET_VOLUME))));
+            JadeFluidObject jadeFluid = JadeFluidObject.of(fluid.getFluid(), fluid.getAmount(), fluid.getComponentsPatch());
+            return List.of(new ViewGroup<>(List.of(new FluidView.Data(jadeFluid, bucketVolume))));
         }
 
         @Override
-        public ResourceLocation getUid()
+        public Identifier getUid()
         {
             return WATER_CAULDRON_FLUID;
         }
@@ -77,12 +74,12 @@ public class ThirstJadePlugin implements IWailaPlugin
         }
     }
 
-    private enum DefaultFluidStorageProvider implements IServerExtensionProvider<CompoundTag>
+    private enum DefaultFluidStorageProvider implements IServerExtensionProvider<FluidView.Data>
     {
         INSTANCE;
 
         @Override
-        public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor)
+        public List<ViewGroup<FluidView.Data>> getGroups(Accessor<?> accessor)
         {
             return CommonProxy.wrapFluidStorage(accessor);
         }
@@ -94,7 +91,7 @@ public class ThirstJadePlugin implements IWailaPlugin
         }
 
         @Override
-        public ResourceLocation getUid()
+        public Identifier getUid()
         {
             return FLUID_STORAGE;
         }
@@ -106,39 +103,34 @@ public class ThirstJadePlugin implements IWailaPlugin
         }
     }
 
-    private enum PurityFluidClientProvider implements IClientExtensionProvider<CompoundTag, FluidView>
+    private enum PurityFluidClientProvider implements IClientExtensionProvider<FluidView.Data, FluidView>
     {
         WATER_CAULDRON(WATER_CAULDRON_FLUID),
         DEFAULT_STORAGE(FLUID_STORAGE);
 
-        private final ResourceLocation uid;
+        private final Identifier uid;
 
-        PurityFluidClientProvider(ResourceLocation uid)
+        PurityFluidClientProvider(Identifier uid)
         {
             this.uid = uid;
         }
 
         @Override
-        public List<ClientViewGroup<FluidView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups)
+        public List<ClientViewGroup<FluidView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<FluidView.Data>> groups)
         {
             return ClientViewGroup.map(groups, PurityFluidClientProvider::readDefault, (serverGroup, clientGroup) -> {});
         }
 
-        private static FluidView readDefault(CompoundTag tag)
+        private static FluidView readDefault(FluidView.Data data)
         {
-            FluidView view = FluidView.readDefault(tag);
+            FluidView view = FluidView.readDefault(data);
             if (view == null)
                 return null;
 
-            if (!tag.contains("fluid"))
+            if (data.fluids().isEmpty())
                 return view;
 
-            JadeFluidObject fluid = JadeFluidObject.CODEC
-                    .parse(NbtOps.INSTANCE, tag.get("fluid"))
-                    .result()
-                    .orElse(null);
-            if (fluid != null)
-                view.fluidName = getFluidName(fluid);
+            view.fluidName = getFluidName(data.fluids().getFirst());
 
             return view;
         }
@@ -160,7 +152,7 @@ public class ThirstJadePlugin implements IWailaPlugin
         }
 
         @Override
-        public ResourceLocation getUid()
+        public Identifier getUid()
         {
             return uid;
         }

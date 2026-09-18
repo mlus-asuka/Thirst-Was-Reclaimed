@@ -1,25 +1,27 @@
 package cn.mlus.thirst.foundation.common.item;
 
-import cn.mlus.thirst.content.thirst.PlayerThirst;
 import cn.mlus.thirst.content.purity.WaterPurity;
+import cn.mlus.thirst.content.thirst.PlayerThirst;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 public class DrinkableItem extends Item
 {
-    private Item container;
+    private Supplier<? extends Item> container;
 
     public DrinkableItem()
     {
@@ -31,7 +33,7 @@ public class DrinkableItem extends Item
         super(p_41383_);
     }
 
-    public DrinkableItem setContainer(Item item)
+    public DrinkableItem setContainer(Supplier<? extends Item> item)
     {
         this.container = item;
         return this;
@@ -64,12 +66,12 @@ public class DrinkableItem extends Item
         {
             if (item.isEmpty())
             {
-                return new ItemStack(container);
+                return new ItemStack(container.get());
             }
 
             if (player != null)
             {
-                ItemStack container = new ItemStack(this.container);
+                ItemStack container = new ItemStack(this.container.get());
                 if (!player.getInventory().add(container)) {
                     player.drop(container, false);
                 }
@@ -85,11 +87,11 @@ public class DrinkableItem extends Item
         return 32;
     }
 
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack p_42997_) {
-        return UseAnim.DRINK;
+    public @NotNull ItemUseAnimation getUseAnimation(@NotNull ItemStack p_42997_) {
+        return ItemUseAnimation.DRINK;
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level p_42993_, @NotNull Player p_42994_, @NotNull InteractionHand p_42995_)
+    public @NotNull InteractionResult use(@NotNull Level p_42993_, @NotNull Player p_42994_, @NotNull InteractionHand p_42995_)
     {
         return ItemUtils.startUsingInstantly(p_42993_, p_42994_, p_42995_);
     }

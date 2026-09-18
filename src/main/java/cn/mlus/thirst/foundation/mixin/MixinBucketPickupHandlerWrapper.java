@@ -1,8 +1,8 @@
 package cn.mlus.thirst.foundation.mixin;
 
 import cn.mlus.thirst.content.purity.WaterPurity;
-import com.simibubi.create.foundation.fluid.FluidHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -42,7 +42,7 @@ public class MixinBucketPickupHandlerWrapper
     {
         if (!WaterPurity.isEnabled()) return;
         FluidStack result = cir.getReturnValue();
-        if (result.isEmpty() || !FluidHelper.isWater(result.getFluid())) return;
+        if (result.isEmpty() || !result.getFluid().defaultFluidState().is(FluidTags.WATER)) return;
         FluidStack copy = result.copy();
         WaterPurity.addPurity(copy, WaterPurity.getBlockPurity(world, blockPos));
         cir.setReturnValue(copy);
@@ -58,7 +58,7 @@ public class MixinBucketPickupHandlerWrapper
     {
         if (!WaterPurity.isEnabled()) return;
         FluidStack result = cir.getReturnValue();
-        if (result.isEmpty() || !FluidHelper.isWater(result.getFluid())) return;
+        if (result.isEmpty() || !result.getFluid().defaultFluidState().is(FluidTags.WATER)) return;
         FluidStack copy = result.copy();
         WaterPurity.addPurity(copy, WaterPurity.getBlockPurity(world, blockPos));
         cir.setReturnValue(copy);
@@ -82,7 +82,7 @@ public class MixinBucketPickupHandlerWrapper
     )
     private boolean compareDrainFluidsIgnoringPurity(FluidStack a, FluidStack b)
     {
-        if (WaterPurity.isEnabled() && FluidHelper.isWater(a.getFluid()) && FluidHelper.isWater(b.getFluid()))
+        if (WaterPurity.isEnabled() && a.getFluid().defaultFluidState().is(FluidTags.WATER) && b.getFluid().defaultFluidState().is(FluidTags.WATER))
             return a.getFluid() == b.getFluid();
         return FluidStack.isSameFluidSameComponents(a, b);
     }
@@ -95,7 +95,7 @@ public class MixinBucketPickupHandlerWrapper
     {
         if (!WaterPurity.isEnabled()) return;
         FluidStack result = cir.getReturnValue();
-        if (result.isEmpty() || !FluidHelper.isWater(result.getFluid())) return;
+        if (result.isEmpty() || !result.getFluid().defaultFluidState().is(FluidTags.WATER)) return;
         FluidStack copy = result.copy();
         WaterPurity.addPurity(copy, WaterPurity.getBlockPurity(world, blockPos));
         cir.setReturnValue(copy);

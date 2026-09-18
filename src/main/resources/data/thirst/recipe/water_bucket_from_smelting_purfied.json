@@ -1,21 +1,24 @@
 {
   "type": "minecraft:smelting",
-  "ingredient":[
+  "ingredient": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "minecraft:water_bucket",
       "components": {
         "thirst:purity": 1
       }
     },
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "minecraft:water_bucket",
       "components": {
         "thirst:purity": 2
       }
     }
-  ],
+    ]
+  },
   "result": {
     "id": "minecraft:water_bucket",
     "count": 1,

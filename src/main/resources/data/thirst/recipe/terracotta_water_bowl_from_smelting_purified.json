@@ -1,21 +1,24 @@
 {
   "type": "minecraft:smelting",
-  "ingredient":[
+  "ingredient": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "thirst:terracotta_water_bowl",
       "components": {
         "thirst:purity": 1
       }
     },
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "thirst:terracotta_water_bowl",
       "components": {
         "thirst:purity": 2
       }
     }
-  ],
+    ]
+  },
   "result": {
     "id": "thirst:terracotta_water_bowl",
     "count": 1,

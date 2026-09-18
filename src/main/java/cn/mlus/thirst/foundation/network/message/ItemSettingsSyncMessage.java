@@ -10,21 +10,16 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HexFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public record ItemSettingsSyncMessage(
         List<Entry> drinks,
@@ -193,11 +188,11 @@ public record ItemSettingsSyncMessage(
         Map<Item, Number[]> map = new HashMap<>();
         for (Entry entry : source)
         {
-            ResourceLocation id = ResourceLocation.tryParse(entry.itemId);
+            Identifier id = Identifier.tryParse(entry.itemId);
             if (id == null)
                 continue;
 
-            Item item = BuiltInRegistries.ITEM.get(id);
+            Item item = BuiltInRegistries.ITEM.getValue(id);
             if (item != null)
                 map.put(item, new Number[]{entry.thirst, entry.quenched});
         }
@@ -209,11 +204,11 @@ public record ItemSettingsSyncMessage(
         List<Item> items = new ArrayList<>();
         for (String itemId : source)
         {
-            ResourceLocation id = ResourceLocation.tryParse(itemId);
+            Identifier id = Identifier.tryParse(itemId);
             if (id == null)
                 continue;
 
-            Item item = BuiltInRegistries.ITEM.get(id);
+            Item item = BuiltInRegistries.ITEM.getValue(id);
             if (item != Items.AIR)
                 items.add(item);
         }

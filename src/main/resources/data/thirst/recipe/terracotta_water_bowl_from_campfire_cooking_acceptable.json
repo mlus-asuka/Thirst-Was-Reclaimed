@@ -1,14 +1,12 @@
 {
   "type": "minecraft:campfire_cooking",
-  "ingredient":[
-    {
-      "type": "neoforge:components",
+  "ingredient": {
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "thirst:terracotta_water_bowl",
       "components": {
         "thirst:purity": 1
       }
-    }
-  ],
+    },
   "result": {
     "id": "thirst:terracotta_water_bowl",
     "count": 1,

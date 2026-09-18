@@ -1,13 +1,12 @@
 package cn.mlus.thirst.content.thirst;
 
 import cn.mlus.thirst.api.ThirstHelper;
+import cn.mlus.thirst.foundation.common.capability.FoodDataAccess;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import cn.mlus.thirst.foundation.common.damagesource.ModDamageSource;
 import cn.mlus.thirst.foundation.config.CommonConfig;
 import cn.mlus.thirst.foundation.network.message.PlayerThirstSyncMessage;
-import de.teamlapen.vampirism.util.Helper;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -15,14 +14,14 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PlayerThirst implements IThirst, INBTSerializable<CompoundTag>
+public class PlayerThirst implements IThirst, ValueIOSerializable
 {
     public static final String PERSISTENT_THIRST_KEY = "thirst";
     public static final String PERSISTENT_QUENCHED_KEY = "thirst_quenched";
@@ -34,7 +33,6 @@ public class PlayerThirst implements IThirst, INBTSerializable<CompoundTag>
     public static boolean checkFDEffects = false;
     public static boolean checkLetsDoBakeryEffects = false;
     public static boolean checkLetsDoBreweryEffects = false;
-    public static boolean checkVampirismEffects = false;
 
     int thirst = 20;
     int quenched = 5;
@@ -127,9 +125,6 @@ public class PlayerThirst implements IThirst, INBTSerializable<CompoundTag>
         if(checkTombstoneEffects && player.getActiveEffects().stream().anyMatch(e -> e.getDescriptionId().contains("ghostly_shape")))
             return;
 
-        if(checkVampirismEffects && Helper.isVampire(player))
-            return;
-
         AtomicBoolean isNourished = new AtomicBoolean(false);
         AtomicBoolean isStuffed = new AtomicBoolean(false);
         AtomicBoolean isSaturated = new AtomicBoolean(false);
@@ -145,7 +140,7 @@ public class PlayerThirst implements IThirst, INBTSerializable<CompoundTag>
             if(checkLetsDoBreweryEffects && mobEffectInstance.getDescriptionId().contains("saturated")){
                 isSaturated.set(true);
             }
-            if(CommonConfig.DEPLETES_WHEN_NAUSED.get() && mobEffectInstance.is(MobEffects.CONFUSION)){
+            if(CommonConfig.DEPLETES_WHEN_NAUSED.get() && mobEffectInstance.is(MobEffects.NAUSEA)){
                 addExhaustion(player,0.06F);
             }
 
@@ -215,7 +210,7 @@ public class PlayerThirst implements IThirst, INBTSerializable<CompoundTag>
 
     void updateExhaustion(Player player)
     {
-        float hungerExhaustion = player.getFoodData().getExhaustionLevel();
+        float hungerExhaustion = ((FoodDataAccess) player.getFoodData()).thirst$getExhaustionLevel();
         float normalizedHungerExhaustion = hungerExhaustion < this.prevTickExhaustion ? (exhaustionRecalculate ? hungerExhaustion + 4.0F : hungerExhaustion) : hungerExhaustion;
         if(exhaustionRecalculate){
             exhaustionRecalculate = false;
@@ -288,20 +283,18 @@ public class PlayerThirst implements IThirst, INBTSerializable<CompoundTag>
 
 
     @Override
-    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
-        CompoundTag nbt = new CompoundTag();
-        nbt.putInt("thirst", thirst);
-        nbt.putInt("quenched", quenched);
-        nbt.putFloat("exhaustion", exhaustion);
-        nbt.putBoolean("enable",shouldTickThirst);
-        return nbt;
+    public void serialize(ValueOutput output) {
+        output.putInt("thirst", thirst);
+        output.putInt("quenched", quenched);
+        output.putFloat("exhaustion", exhaustion);
+        output.putBoolean("enable", shouldTickThirst);
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.@NotNull Provider provider, CompoundTag nbt) {
-        thirst = nbt.getInt("thirst");
-        quenched = nbt.getInt("quenched");
-        exhaustion = nbt.getFloat("exhaustion");
-        shouldTickThirst = !nbt.contains("enable") || nbt.getBoolean("enable");
+    public void deserialize(ValueInput input) {
+        thirst = input.getIntOr("thirst", 20);
+        quenched = input.getIntOr("quenched", 5);
+        exhaustion = input.getFloatOr("exhaustion", 0.0F);
+        shouldTickThirst = input.getBooleanOr("enable", true);
     }
 }

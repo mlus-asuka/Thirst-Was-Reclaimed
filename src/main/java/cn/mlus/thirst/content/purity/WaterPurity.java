@@ -43,7 +43,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -128,7 +127,7 @@ public class WaterPurity
     private static void registerContainers()
     {
         waterContainers.add(new ContainerWithPurity(Items.GLASS_BOTTLE,
-                PotionContents.createItemStack(Items.POTION,Potions.WATER).getItem()).setEqualsFilled(itemStack ->
+                Items.POTION).setEqualsFilled(itemStack ->
                 itemStack.is(Items.POTION) && itemStack.get(DataComponents.POTION_CONTENTS).is(Potions.WATER)));
         waterContainers.add(new ContainerWithPurity(ItemInit.TERRACOTTA_BOWL.get(),
                 ItemInit.TERRACOTTA_WATER_BOWL.get()));
@@ -218,7 +217,7 @@ public class WaterPurity
             //Trying to make compat with unregistered fluid container
             BlockEntity entity = level.getBlockEntity(pos);
 
-            if (isFillableBlock(blockState) ||(entity != null && Capabilities.FluidHandler.BLOCK.getCapability(level,pos,blockState,entity,null) != null))
+            if (isFillableBlock(blockState))
             {
                 int purity = getPurity(event.getItemStack());
 
@@ -666,7 +665,7 @@ public class WaterPurity
                 if (chance < CommonConfig.DIRTY_NAUSEA_PERCENTAGE.get().intValue() / 100.0f) {
                     if(player instanceof ServerPlayer)
                     {
-                        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20 * 5, 0));
+                        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5, 0));
                         player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 20 * 30, 0));
                     }
 
@@ -685,7 +684,7 @@ public class WaterPurity
                 if (chance < CommonConfig.SLIGHTLY_DIRTY_NAUSEA_PERCENTAGE.get().intValue() / 100.0f) {
                     if(player instanceof ServerPlayer)
                     {
-                        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20 * 5, 0));
+                        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5, 0));
                         player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 20 * 30, 0));
                     }
 
@@ -704,7 +703,7 @@ public class WaterPurity
                 if (chance < CommonConfig.ACCEPTABLE_NAUSEA_PERCENTAGE.get().intValue() / 100.0f) {
                     if(player instanceof ServerPlayer)
                     {
-                        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20 * 5, 0));
+                        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5, 0));
                         player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 20 * 30, 0));
                     }
 
@@ -723,7 +722,7 @@ public class WaterPurity
                 if (chance < CommonConfig.PURIFIED_NAUSEA_PERCENTAGE.get().intValue() / 100.0f) {
                     if(player instanceof ServerPlayer)
                     {
-                        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20 * 5, 0));
+                        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5, 0));
                         player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 20 * 30, 0));
                     }
 

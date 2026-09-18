@@ -1,6 +1,5 @@
 package cn.mlus.thirst.api;
 
-import cn.mlus.thirst.compat.supernatural.SupernaturalHelper;
 import cn.mlus.thirst.content.purity.ContainerWithPurity;
 import cn.mlus.thirst.content.purity.WaterPurity;
 import cn.mlus.thirst.foundation.common.event.RegisterThirstValueEvent;
@@ -11,7 +10,6 @@ import cn.mlus.thirst.foundation.config.ItemSettingsConfig;
 import cn.mlus.thirst.foundation.config.KeyWordConfig;
 import cn.mlus.thirst.foundation.util.ConfigHelper;
 import cn.mlus.thirst.foundation.util.LoadedValue;
-import com.momosoftworks.coldsweat.api.util.Temperature;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
@@ -22,7 +20,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.fml.ModList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +29,6 @@ import java.util.regex.Pattern;
 
 public class ThirstHelper
 {
-    private static boolean useColdSweatCaps = false;
     private static final float MODIFIER_HARSHNESS = 0.5f;
     public static Map<Item, Number[]> VALID_DRINKS = LoadedValue.of(() -> ConfigHelper
             .getItemsWithValues(ItemSettingsConfig.DRINKS.get()))
@@ -77,10 +73,6 @@ public class ThirstHelper
 
     public static boolean playerRestoresThirst(ItemStack itemStack, Player player)
     {
-        if (ModList.get().isLoaded("supernatural"))
-        {
-            return SupernaturalHelper.canDrinkItem(itemStack, player);
-        }
         return true;
     }
 
@@ -184,10 +176,6 @@ public class ThirstHelper
         syncedSettingsHash = settingsHash;
     }
 
-    public static void shouldUseColdSweatCaps(boolean should)
-    {
-        useColdSweatCaps = should;
-    }
     public static float getExhaustionFireProtModifier(Player player)
     {
         final float perLevelMultiplier = 0.0625f;
@@ -214,7 +202,7 @@ public class ThirstHelper
         BlockPos pos = player.getOnPos();
         Level level = player.level();
 
-        if(level.dimensionType().ultraWarm())
+        if(level.dimension() == Level.NETHER)
             return CommonConfig.NETHER_THIRST_DEPLETION_MODIFIER.get().floatValue();
         else
         {
@@ -228,17 +216,10 @@ public class ThirstHelper
             //temperature range: -0.8 - 2 == 2.8 midpoint: 0.8
             float temp = biome.getBaseTemperature() + 0.2f;
 
-            if(useColdSweatCaps)
-                {
-                    temp = (float) (Temperature.get(player, Temperature.Trait.BODY) / 100f);
-                }
-            else
-            {
-                if(temp <= 0)
-                    temp = (float) Math.exp(temp);
-                else if(temp > 1)
-                    temp /= 2;
-            }
+            if(temp <= 0)
+                temp = (float) Math.exp(temp);
+            else if(temp > 1)
+                temp /= 2;
 
             float thirstModifier = CommonConfig.THIRST_DEPLETION_MODIFIER.get().floatValue() * (temp  / humidity);
 
@@ -265,19 +246,19 @@ public class ThirstHelper
         if(!enableKeywordConfig)
             return false;
 
-        if(itemStack.getFoodProperties(null) == null)
+        if(itemStack.get(net.minecraft.core.component.DataComponents.FOOD) == null)
             return false;
 
         String pattern = keywordBlackList;
         Matcher matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)
-                .matcher(itemStack.getDescriptionId());
+                .matcher(itemStack.getItem().getDescriptionId());
 
         if(matcher.find())
             return false;
 
         pattern = keywordDrink;
         matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)
-                .matcher(itemStack.getDescriptionId());
+                .matcher(itemStack.getItem().getDescriptionId());
 
         boolean hasWater=matcher.find();
         if(hasWater)
@@ -291,7 +272,7 @@ public class ThirstHelper
 
         pattern = keywordSoup;
         matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)
-                .matcher(itemStack.getDescriptionId());
+                .matcher(itemStack.getItem().getDescriptionId());
 
         hasWater=matcher.find();
         if(hasWater)
@@ -305,7 +286,7 @@ public class ThirstHelper
 
         pattern = keywordFruit;
         matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)
-                .matcher(itemStack.getDescriptionId());
+                .matcher(itemStack.getItem().getDescriptionId());
 
         hasWater = matcher.find();
         if(hasWater)

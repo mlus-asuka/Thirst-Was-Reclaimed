@@ -2,7 +2,7 @@ package cn.mlus.thirst.foundation.gui;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.neoforged.bus.api.Event;
 
 /**
@@ -12,14 +12,14 @@ public abstract class RenderGuiEvent extends Event
 {
     private final Type type;
     private final Gui gui;
-    private final GuiGraphics guiGraphics;
+    private final GuiGraphicsExtractor guiGraphics;
     private final DeltaTracker deltaTracker;
     private final int screenWidth;
     private final int screenHeight;
 
     private int rowTop;
 
-    public RenderGuiEvent(Type type, Gui gui, GuiGraphics guiGraphics, DeltaTracker deltaTracker, int screenWidth, int screenHeight, int rowTop)
+    public RenderGuiEvent(Type type, Gui gui, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, int screenWidth, int screenHeight, int rowTop)
     {
         this.type = type;
         this.gui = gui;
@@ -40,7 +40,7 @@ public abstract class RenderGuiEvent extends Event
         return this.gui;
     }
 
-    public GuiGraphics getGuiGraphics()
+    public GuiGraphicsExtractor getGuiGraphics()
     {
         return this.guiGraphics;
     }
@@ -78,12 +78,12 @@ public abstract class RenderGuiEvent extends Event
 
     public static class Pre extends RenderGuiEvent
     {
-        public Pre(Type type, Gui gui, GuiGraphics guiGraphics, DeltaTracker deltaTracker, int screenWidth, int screenHeight, int rowTop)
+        public Pre(Type type, Gui gui, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, int screenWidth, int screenHeight, int rowTop)
         {
             super(type, gui, guiGraphics, deltaTracker, screenWidth, screenHeight, rowTop);
         }
 
-        public Pre(Type type, Gui gui, GuiGraphics guiGraphics, DeltaTracker deltaTracker, int screenWidth, int screenHeight)
+        public Pre(Type type, Gui gui, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, int screenWidth, int screenHeight)
         {
             this(type, gui, guiGraphics, deltaTracker, screenWidth, screenHeight, -1);
         }

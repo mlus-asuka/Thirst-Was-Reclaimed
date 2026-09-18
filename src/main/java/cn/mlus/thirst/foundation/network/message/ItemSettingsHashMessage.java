@@ -5,7 +5,7 @@ import cn.mlus.thirst.api.ThirstHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +45,7 @@ public record ItemSettingsHashMessage(String settingsHash) implements CustomPack
         context.enqueueWork(() ->
         {
             if (!ThirstHelper.hasSyncedSettingsHash(message.settingsHash))
-                PacketDistributor.sendToServer(new ItemSettingsSyncRequestMessage());
+                ClientPacketDistributor.sendToServer(new ItemSettingsSyncRequestMessage());
         });
     }
 

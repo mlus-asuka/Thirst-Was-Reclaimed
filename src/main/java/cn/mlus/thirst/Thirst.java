@@ -1,8 +1,5 @@
 package cn.mlus.thirst;
 
-import cn.mlus.thirst.api.ThirstHelper;
-import cn.mlus.thirst.compat.create.CreateRegistry;
-import cn.mlus.thirst.compat.create.ponder.ThirstPonderPlugin;
 import cn.mlus.thirst.content.purity.WaterPurity;
 import cn.mlus.thirst.content.registry.ConditionInit;
 import cn.mlus.thirst.content.registry.EffectInit;
@@ -11,13 +8,11 @@ import cn.mlus.thirst.content.registry.ThirstComponent;
 import cn.mlus.thirst.content.thirst.PlayerThirst;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import cn.mlus.thirst.foundation.config.*;
-import cn.mlus.thirst.foundation.gui.ThirstBarRenderer;
 import cn.mlus.thirst.foundation.gui.appleskin.HUDOverlayHandler;
 import cn.mlus.thirst.foundation.gui.appleskin.OverlayRegister;
 import cn.mlus.thirst.foundation.gui.appleskin.TooltipOverlayHandler;
 import cn.mlus.thirst.foundation.tab.ThirstTab;
-import net.createmod.ponder.foundation.PonderIndex;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -41,23 +36,16 @@ public class Thirst
         ModAttachment.ATTACHMENT_TYPES.register(modBus);
         ThirstComponent.DR.register(modBus);
 
-        if(FMLEnvironment.dist.isClient()){
-            if(ModList.get().isLoaded("appleskin"))
-            {
-                HUDOverlayHandler.init();
-                TooltipOverlayHandler.init();
-                modBus.addListener(this::onRegisterClientTooltipComponentFactories);
-                modBus.addListener(OverlayRegister::onRenderGuiOverlayPost);
-            }
-        }
-
         ItemInit.register(modBus);
         EffectInit.register(modBus);
         ConditionInit.CONDITION_CODECS.register(modBus);
+        ConditionInit.LOOT_CONDITION_TYPES.register(modBus);
 
-        if(ModList.get().isLoaded("create"))
-        {
-            CreateRegistry.register();
+        if (FMLEnvironment.getDist().isClient() && ModList.get().isLoaded("appleskin")) {
+            HUDOverlayHandler.init();
+            TooltipOverlayHandler.init();
+            modBus.addListener(this::registerTooltipComponents);
+            modBus.addListener(OverlayRegister::onRenderGuiOverlayPost);
         }
 
         ThirstTab.register(modBus);
@@ -71,16 +59,10 @@ public class Thirst
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-        WaterPurity.init();
-
-        if(ModList.get().isLoaded("coldsweat"))
-            ThirstHelper.shouldUseColdSweatCaps(true);
+        event.enqueueWork(WaterPurity::init);
 
         if(ModList.get().isLoaded("tombstone"))
             PlayerThirst.checkTombstoneEffects = true;
-
-        if(ModList.get().isLoaded("vampirism"))
-            PlayerThirst.checkVampirismEffects = true;
 
         if(ModList.get().isLoaded("farmersdelight"))
             PlayerThirst.checkFDEffects = true;
@@ -94,27 +76,15 @@ public class Thirst
 
     private void clientSetup(final FMLClientSetupEvent event)
     {
-        if(ModList.get().isLoaded("create")){
-            event.enqueueWork(()-> new Object()
-            {
-                public void registerPonderPlugin(){
-                    PonderIndex.addPlugin(new ThirstPonderPlugin());
-                }
-            }.registerPonderPlugin());
-        }
-
-        if(ModList.get().isLoaded("vampirism"))
-        {
-            ThirstBarRenderer.checkIfPlayerIsVampire = true;
-        }
     }
 
-    public static ResourceLocation asResource(String path)
+    private void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event)
     {
-        return ResourceLocation.fromNamespaceAndPath(ID, path);
+        TooltipOverlayHandler.register(event);
     }
 
-    private void onRegisterClientTooltipComponentFactories(RegisterClientTooltipComponentFactoriesEvent event) {
-        TooltipOverlayHandler.register(event);
+    public static Identifier asResource(String path)
+    {
+        return Identifier.fromNamespaceAndPath(ID, path);
     }
 }
